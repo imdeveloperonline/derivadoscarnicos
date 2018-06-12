@@ -33,6 +33,15 @@
 
 		</script>
 		<script>
+			/**
+			 * FUNCIÓN AL SELECCIONAR UN ANTICIPO ACTIVO
+			 * ==========================================
+			 	Se toma el ID del anticipo y retorna la cantidad de producto recibido y el monto de dinero disponible del anticipo
+
+			 * @return PHP json_encode array([MONTO ANTICIPADO],[MONTO TOTAL RECIBIDO],[PRECIO UNITARIO ACTUAL])
+			
+			 */
+			
 			
 			$(function(){
 				$('select[name="advance_supplier_id"]').change(function(){
@@ -41,34 +50,39 @@
 
 					$.ajax({
 						data: {id:id},
-						url: "<?= base_url() ?>finanzas/get_rest_advance",
+						url: "<?= base_url() ?>finanzas/get_rest_amount_advance",
 						type: "post",
 						success: function(response) {
+							var array = JSON.parse(response);
+							var adv_amount = array[0];
+							var recieved_amount = array[1];
+							var supplier_unit_price = array[2];
+							adv_balance = parseFloat(adv_amount) - parseFloat(recieved_amount);
 
-							rest = response;
-
+							$("input[name='unit_price']").val(supplier_unit_price);
+							
 							if($('input[name="quantity"]').val() != ""){
-
+								
 								var quantity = $('input[name="quantity"]').val();
-								var reception_rest = rest-quantity;
-
+								var reception_rest = adv_balance- (quantity*supplier_unit_price);
+								
 								if(reception_rest < 0) {
-									$('input[name="rest"]').css("color","red");
+									$('input[name="adv_balance"]').css("color","red");
 								} else {
-									$('input[name="rest"]').removeAttr("style");
+									$('input[name="adv_balance"]').removeAttr("style");
 								}
 
-								$('input[name="rest"]').val(reception_rest.toFixed(2));
+								$('input[name="adv_balance"]').val(reception_rest.toFixed(2));
 
 							} else {
-								$('input[name="rest"]').val(response);
+								$("input[name='adv_balance']").val(adv_balance);
 							}
 							
 						},
 						error: function(error) {
 							$("#message").remove();
 
-			                  $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>No pudimos obtener la CANTIDAD FALTANTE del servidor. Recargaremos la página para intentar corregirlo</p></div>').appendTo('#resultado').hide().fadeIn('slow');
+			                  $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>No pudimos obtener la CANTIDAD FALTANTE del servidor. Recargaremos la página para intentar corregirlo</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
 
 			                  $("#close").click();
 						}
@@ -79,20 +93,69 @@
 
 				$('input[name="quantity"]').change(function(){
 					
-					if(rest == null || rest == ""){
-						rest = 0;
-					}
-					var quantity = $('input[name="quantity"]').val();
-					var reception_rest = rest-quantity;
+					if(typeof adv_balance != "undefined") {
+						var quantity = $('input[name="quantity"]').val();
+						var unit_price = $('input[name="unit_price"]').val();
+						var reception_rest = adv_balance - (quantity*unit_price);
 
-					if(reception_rest < 0) {
-						$('input[name="rest"]').css("color","red");
+						if(reception_rest < 0) {
+							$('input[name="adv_balance"]').css("color","red");
+						} else {
+							$('input[name="adv_balance"]').removeAttr("style");
+						}
+
+
+						$('input[name="adv_balance"]').val(reception_rest.toFixed(2));
 					} else {
-						$('input[name="rest"]').removeAttr("style");
+						var valid = $('select[name="advance_supplier_id"]').valid();
+
+						if(valid != false) {
+
+							var id = $('select[name="advance_supplier_id"]').val();
+
+							$.ajax({
+								data: {id:id},
+								url: "<?= base_url() ?>finanzas/get_rest_amount_advance",
+								type: "post",
+								success: function(response) {
+									var array = JSON.parse(response);
+									var adv_amount = array[0];
+									var recieved_amount = array[1];
+									var supplier_unit_price = array[2];
+									adv_balance = parseFloat(adv_amount) - parseFloat(recieved_amount);
+
+									$("input[name='unit_price']").val(supplier_unit_price);
+
+									if($('input[name="quantity"]').val() != ""){
+
+										var quantity = $('input[name="quantity"]').val();
+										var reception_rest = adv_balance-quantity;
+
+										if(reception_rest < 0) {
+											$('input[name="adv_balance"]').css("color","red");
+										} else {
+											$('input[name="adv_balance"]').removeAttr("style");
+										}
+
+										$('input[name="adv_balance"]').val(reception_rest.toFixed(2));
+
+									} else {
+										$("input[name='adv_balance']").val(adv_balance);
+									}
+									
+								},
+								error: function(error) {
+									$("#message").remove();
+
+					                  $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>No pudimos obtener la CANTIDAD FALTANTE del servidor. Recargaremos la página para intentar corregirlo</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
+
+					                  $("#close").click();
+								}
+
+							});
+						} 
 					}
-
-
-					$('input[name="rest"]').val(reception_rest.toFixed(2));
+					
 
 				});
 			});
@@ -243,7 +306,7 @@
 
 					} 
 
-					if($('.unit_price').css("display") != "none") {
+					if($('.unit_price').css("display") == "none") {
 						$('.unit_price').toggle(250);
 					}
 

@@ -638,6 +638,20 @@ class Finanzas extends CI_Controller {
 		echo $rest;
 	}
 
+	public function get_rest_amount_advance()
+	{
+		$advance_id = $_POST['id'];
+
+		$array = $this->finances->get_rest_amount_advance($advance_id);
+		/*$rest = $query->result_array()[0]['rest'];
+
+		if($rest == NULL) {
+			$rest = $query->result_array()[0]['quantity'];
+		}*/
+
+		echo json_encode($array);
+	}
+
 	public function get_rest_advance_exclude_this()
 	{
 		$advance_id = $_POST['advance_id'];

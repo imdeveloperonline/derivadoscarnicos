@@ -255,9 +255,9 @@
 											</section>
 
 											<section class="col col-6">
-												<label class="label"><strong>Producto por recibir</strong></label>
+												<label class="label"><strong>Saldo anticipo</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
-													<input type="text" name="rest" placeholder="Producto por recibir"  required rest="true" readonly="" disabled="">
+													<input type="text" name="adv_balance" placeholder="Producto por recibir"  required rest="true" readonly="" disabled="">
 												</label>
 												<div class="note">
 													Este campo es llenado automáticamente y no puede ser menor a cero (0)
@@ -265,6 +265,7 @@
 											</section>
 											
 										</div>
+										
 
 										<div class="row advance" style="display: none">
 											<section class="col col-6">

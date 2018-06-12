@@ -75,6 +75,24 @@ class Finanzas_model extends CI_Model {
 		return $query;
 	}
 
+	public function get_rest_amount_advance($advance_supplier_id)
+	{
+		$query = $this->db->query('SELECT reception.quantity, reception.unit_price AS reception_unit_price, amount, supplier.precio_unitario AS supplier_unit_price FROM reception INNER JOIN advance_supplier ON advance_supplier.id = reception.advance_supplier_id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id WHERE advance_supplier_id = ?',array($advance_supplier_id));
+
+		$count = count($query->result_array());
+		$recieved_amount = 0;
+		foreach ($query->result_array() as $key => $value) {
+			$amount_row = $value['quantity'] * $value['reception_unit_price'];
+			$recieved_amount = $amount_row + $recieved_amount;
+		}
+
+		$advance_amount = $query->result_array()[0]['amount'];
+		$supplier_unit_price = $query->result_array()[0]['supplier_unit_price'];
+
+
+		return array($advance_amount,$recieved_amount,$supplier_unit_price);
+	}
+
 	public function get_rest_advance_exclude_this($advance_id,$reception_id)
 	{
 		$query = $this->db->query('SELECT quantity-total_reception_quantity AS rest, total_reception_quantity, quantity FROM advance_supplier INNER JOIN (SELECT SUM(quantity) AS total_reception_quantity FROM reception WHERE advance_supplier_id = '.$advance_id.' AND reception.deleted != 1 AND reception.id != '.$reception_id.') AS quantity_reception_table WHERE id = ?',array($advance_id));
