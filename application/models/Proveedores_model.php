@@ -10,17 +10,11 @@ class Proveedores_model extends CI_Model {
 
 	public function get_suppliers()
 	{
-		if($_SESSION['profile'] == 1 || $_SESSION['profile'] == 2) {
-			$sql = "SELECT supplier.id, supplier.tradename AS supplier_name, supplier.rut, supplier.email, supplier.phone, supplier.address, supplier.zip, city.name AS city_name, department.name AS department_name FROM supplier INNER JOIN city ON supplier.city_id = city.id INNER JOIN department ON department.id = city.department_id WHERE supplier.deleted = 0";
-				$query = $this->db->query($sql);
-		} else {
-			$regional = $this->db->query('SELECT department_id FROM regional INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id WHERE regional.id = ?',array($_SESSION['regional']));
-			$department_id = $regional->result_array()[0]['department_id'];
+		$regional = $this->db->query('SELECT department_id FROM regional INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id WHERE regional.id = ?',array($_SESSION['regional']));
+		$department_id = $regional->result_array()[0]['department_id'];
 
-			$sql = "SELECT supplier.id, supplier.tradename AS supplier_name, supplier.rut, supplier.email, supplier.phone, supplier.address, supplier.zip, city.name AS city_name, department.name AS department_name FROM supplier INNER JOIN supplier_has_shamble ON supplier.id = supplier_has_shamble.supplier_id INNER JOIN shamble ON supplier_has_shamble.shamble_id = shamble.id INNER JOIN city ON shamble.city_id = city.id INNER JOIN department ON department.id = city.department_id WHERE supplier.deleted = 0 AND shamble.deleted != 1 AND department_id = ? GROUP BY supplier.id";
-			$query = $this->db->query($sql,array($department_id));
-		}
-		
+		$sql = "SELECT supplier.id, supplier.tradename AS supplier_name, supplier.rut, supplier.email, supplier.phone, supplier.address, supplier.zip, city.name AS city_name, department.name AS department_name FROM supplier INNER JOIN supplier_has_shamble ON supplier.id = supplier_has_shamble.supplier_id INNER JOIN shamble ON supplier_has_shamble.shamble_id = shamble.id INNER JOIN city ON shamble.city_id = city.id INNER JOIN department ON department.id = city.department_id WHERE supplier.deleted = 0 AND shamble.deleted != 1 AND department_id = ? GROUP BY supplier.id";
+		$query = $this->db->query($sql,array($department_id));		
 		
 		return $query;
 	}
