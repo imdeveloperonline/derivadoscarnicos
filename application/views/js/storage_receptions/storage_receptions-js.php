@@ -197,7 +197,7 @@
 						responsiveHelper_dt_basic.respond();
 					}
 				});
-	
+		
 			/* END BASIC */
 	
 			/* TABLETOOLS */

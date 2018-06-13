@@ -74,6 +74,7 @@
 												<tr>
 													<th data-hide="phone">ID</th>
 													<th data-class="expand">Proveedor</th>
+													<th data-hide="phone,tablet">Regional</th>
 													<th data-hide="phone">Valor (COP)</th>
 													<th data-hide="phone,tablet">Producto</th>
 													<th data-hide="phone,tablet">Cantidad</th>
@@ -115,6 +116,7 @@
 															<tr id="tr_<?= $value['id'] ?>">
 																<td><?= $value['id']; ?></td>
 																<td><?= $value['supplier_name']; ?></td>
+																<td><?= $value['regional_name']; ?></td>
 																<td><?= $value['amount']; ?></td>
 																<td><?= $value['product_name']; ?></td>
 																<td><?= $value['quantity']; ?></td>

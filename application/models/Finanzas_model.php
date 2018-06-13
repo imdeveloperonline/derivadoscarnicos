@@ -20,15 +20,10 @@ class Finanzas_model extends CI_Model {
 			$method = ' AND method_id = '.$method;
 		}
 
-		if($_SESSION['profile'] == 1 || $_SESSION['profile'] == 2) {
-			$query = $this->db->query('SELECT advance_supplier.id, date, amount, unit_price, quantity, product_id, payed, advance_supplier.detail, product.name AS product_name, supplier_id, user_id, regional_id, supplier.tradename AS supplier_name, method.name AS method_name FROM advance_supplier INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN product ON product.id = advance_supplier.product_id LEFT JOIN method ON method.id = advance_supplier.method_id WHERE archived = 0'.$method);
-		} else {
+		
 
-			$regional = $this->db->query('SELECT department_id FROM regional INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id WHERE regional.id = ?',array($_SESSION['regional']));
-			$department_id = $regional->result_array()[0]['department_id'];
+		$query = $this->db->query('SELECT advance_supplier.id, date, amount, unit_price, quantity, product_id, payed, advance_supplier.detail, product.name AS product_name, advance_supplier.supplier_id, user_id, regional_id, regional.name AS regional_name, supplier.tradename AS supplier_name, method.name AS method_name FROM advance_supplier INNER JOIN regional ON regional.id = advance_supplier.regional_id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN supplier_has_shamble ON supplier.id = supplier_has_shamble.supplier_id INNER JOIN shamble ON supplier_has_shamble.shamble_id = shamble.id INNER JOIN city ON shamble.city_id = city.id INNER JOIN department ON department.id = city.department_id INNER JOIN product ON product.id = advance_supplier.product_id LEFT JOIN method ON method.id = advance_supplier.method_id WHERE regional_id = ? AND archived = 0 '.$method.' GROUP BY advance_supplier.id', array($_SESSION['regional']));
 
-			$query = $this->db->query('SELECT advance_supplier.id, date, amount, unit_price, quantity, product_id, payed, advance_supplier.detail, product.name AS product_name, advance_supplier.supplier_id, user_id, regional_id, supplier.tradename AS supplier_name, method.name AS method_name FROM advance_supplier INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN supplier_has_shamble ON supplier.id = supplier_has_shamble.supplier_id INNER JOIN shamble ON supplier_has_shamble.shamble_id = shamble.id INNER JOIN city ON shamble.city_id = city.id INNER JOIN department ON department.id = city.department_id INNER JOIN product ON product.id = advance_supplier.product_id LEFT JOIN method ON method.id = advance_supplier.method_id WHERE department_id = ? AND archived = 0 '.$method.' GROUP BY advance_supplier.id', array($department_id));
-		}
 		return $query;
 	}
 
