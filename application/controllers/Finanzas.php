@@ -498,6 +498,7 @@ class Finanzas extends CI_Controller {
 		$advance['payed'] = 0;
 		$advance['archived'] = 0;
 		$advance['method_id'] = 3;
+		$advance['new_mod'] = 1;
 
 		$advance = $this->security->xss_clean($advance);
 

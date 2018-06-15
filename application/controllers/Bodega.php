@@ -74,7 +74,8 @@ class Bodega extends CI_Controller {
 				"quantity" => $params['quantity'],
 				"supplier_id" => $params['supplier_id'],
 				"product_id" => $params['product_id'],
-				"method_id" => $params['method_id']
+				"method_id" => $params['method_id'],
+				"new_mod" => 1
 
 			);
 
@@ -94,7 +95,8 @@ class Bodega extends CI_Controller {
 			"method_id" => $params['method_id'],
 			"reception_amount" => $params['reception_amount'],
 			"unit_price" => $params['unit_price'],
-			"product_id" => $params['product_id']
+			"product_id" => $params['product_id'],
+			"new_mod" => 1
 
 		); 
 
