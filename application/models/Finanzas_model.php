@@ -269,7 +269,7 @@ class Finanzas_model extends CI_Model {
 	public function get_supplier_balance($supplier_id)
 	{
 		$advances = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE supplier_id = ?',array($supplier_id));
-		$receptions = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE supplier_id = ?',array($supplier_id));
+		$receptions = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE reception.deleted != 1 AND method_id = 3 AND supplier_id = ?',array($supplier_id));
 		
 		$amount_advances = $advances->result_array()[0]['total_amount'];
 		$amount_receptions = $receptions->result_array()[0]['total_amount'];
