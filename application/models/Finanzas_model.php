@@ -266,6 +266,19 @@ class Finanzas_model extends CI_Model {
 		return $query;	
 	}
 
+	public function get_supplier_balance($supplier_id)
+	{
+		$advances = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE supplier_id = ?',array($supplier_id));
+		$receptions = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE supplier_id = ?',array($supplier_id));
+		
+		$amount_advances = $advances->result_array()[0]['total_amount'];
+		$amount_receptions = $receptions->result_array()[0]['total_amount'];
+
+		$balance = $amount_advances - $amount_receptions;
+
+		return $balance;
+	}
+
 }
 
 /* End of file Finanzas_model.php */

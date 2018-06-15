@@ -22,7 +22,7 @@ class Bodega_model extends CI_Model {
 
 	public function get_receptions()
 	{
-		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, advance_supplier_id, advance_supplier.product_id, advance_supplier.quantity AS advance_quantity, note, advance_supplier.unit_price, amount, detail, product.name AS product_name, supplier.tradename AS supplier_name, reception.brand, reception.method_id, method.name AS method_name FROM reception INNER JOIN advance_supplier ON advance_supplier.id = reception.advance_supplier_id INNER JOIN product ON advance_supplier.product_id = product.id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN method ON method.id = reception.method_id INNER JOIN regional ON reception.regional_id = regional.id INNER JOIN city ON city.id = regional.city_id WHERE advance_supplier.archived = 0 AND reception.deleted != 1 AND reception.regional_id = ?',array($_SESSION['regional']));
+		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, note, supplier.tradename AS supplier_name, reception.brand, reception.method_id, method.name AS method_name, method_id, advance_supplier_id, product.name AS product_name, reception_amount FROM reception LEFT JOIN product ON product.id = reception.product_id INNER JOIN supplier ON supplier.id = reception.supplier_id INNER JOIN method ON method.id = reception.method_id INNER JOIN regional ON reception.regional_id = regional.id INNER JOIN city ON city.id = regional.city_id WHERE reception.deleted != 1 AND reception.regional_id = ?',array($_SESSION['regional']));
 		return $query;
 	}
 
@@ -66,7 +66,7 @@ class Bodega_model extends CI_Model {
 
 	public function get_last_reception()
 	{
-		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, reception.brand, advance_supplier_id, advance_supplier.product_id, advance_supplier.quantity AS advance_quantity, note, unit_price, amount, detail, advance_supplier.supplier_id, product.name AS product_name, supplier.tradename AS supplier_name, department.name AS department_name, city.name AS city_name, reception.method_id, method.name AS method_name, name_method, rut_method, bankcenter_method, account_method FROM reception INNER JOIN advance_supplier ON advance_supplier.id = reception.advance_supplier_id INNER JOIN product ON advance_supplier.product_id = product.id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN city ON city.id = supplier.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN method ON method.id = reception.method_id ORDER BY reception.id DESC LIMIT 1');
+		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, reception.brand, advance_supplier_id, advance_supplier.product_id, advance_supplier.quantity AS advance_quantity, note, advance_supplier.unit_price, amount, detail, advance_supplier.supplier_id, product.name AS product_name, supplier.tradename AS supplier_name, department.name AS department_name, city.name AS city_name, reception.method_id, method.name AS method_name, name_method, rut_method, bankcenter_method, account_method FROM reception INNER JOIN advance_supplier ON advance_supplier.id = reception.advance_supplier_id INNER JOIN product ON advance_supplier.product_id = product.id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN city ON city.id = supplier.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN method ON method.id = reception.method_id ORDER BY reception.id DESC LIMIT 1');
 		return $query;
 	}
 
@@ -212,7 +212,7 @@ class Bodega_model extends CI_Model {
 		return $query;		
 	}
 
-	public function send_low_rest_alert($reception_array, $rest)
+	public function send_low_rest_alert($reception_array, $new_balance)
 	{
 		foreach ($reception_array as $key => $value) {
 			$reception_id = $value['id'];
@@ -290,7 +290,7 @@ class Bodega_model extends CI_Model {
 		 $this->email->to($array_emails);
 		 $this->email->subject('Alerta de Derivados Cárnicos');
 
-		 $this->email->message('<h2>El siguiente anticipo tiene 10 o menos productos por entregar</h2><br><br><p>Anticipo N°: '.$advance_id.'</p><p>Proveedor: '.$supplier.'</p><p>Dpto - Ciudad: '.$department.' - '.$city.'</p><p>Falta por recibir: '.$rest.' '.$product.'</p><p>Recepción N°: '.$reception_id.'</p><br><b>DATOS DE PAGO: </b><br>Medio de Pago Principal:<br>Nombre: '.$name_method.'<br>CC / NIT: '.$rut_method.'<br>Banco / Centro de Pago: '.$bankcenter_method.'<br>Cuenta: '.$account_method.'<br><br>'.$banks.$centers.'<p>Este mensaje es generado automáticamente</p>');
+		 $this->email->message('<h2>El siguiente proveedor tiene saldo igual o menor a 100.000 pesos en anticipos</h2><br><br><p>Proveedor: '.$supplier.'</p><p>Dpto - Ciudad: '.$department.' - '.$city.'</p><p>Saldo actual: '.$new_balance.'</p><p>Recepción N°: '.$reception_id.'</p><br><b>DATOS DE PAGO: </b><br>Medio de Pago Principal:<br>Nombre: '.$name_method.'<br>CC / NIT: '.$rut_method.'<br>Banco / Centro de Pago: '.$bankcenter_method.'<br>Cuenta: '.$account_method.'<br><br>'.$banks.$centers.'<p>Este mensaje es generado automáticamente</p>');
 		 
 		 /*var_dump($this->email->print_debugger());*/
 		 if($this->email->send()) {

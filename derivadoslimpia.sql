@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 12-06-2018 a las 04:38:23
+-- Tiempo de generación: 15-06-2018 a las 05:42:14
 -- Versión del servidor: 10.1.29-MariaDB
 -- Versión de PHP: 7.2.0
 
@@ -1798,6 +1798,8 @@ CREATE TABLE `reception` (
   `date` datetime DEFAULT NULL,
   `quantity` decimal(65,2) DEFAULT NULL,
   `unit_price` decimal(65,2) DEFAULT NULL,
+  `reception_amount` decimal(65,2) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
   `regional_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `note` text COLLATE utf8_spanish_ci,

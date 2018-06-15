@@ -74,12 +74,11 @@
 												<tr>
 													<th data-hide="phone">ID</th>
 													<th data-class="expand">Proveedor</th>
-													<th data-hide="phone,tablet">Trans. N°</th>
+													<th data-hide="phone,tablet">Fecha</th>
 													<th data-hide="phone,tablet">Tipo Trans.</th>
 													<th data-hide="phone,tablet">Producto</th>
 													<th data-hide="phone,tablet">Cantidad</th>
-													<th data-hide="phone,tablet">Fecha</th>
-													<th data-hide="phone,tablet">Producto por recibir</th>
+													<th data-hide="phone,tablet">Valor</th>
 													<th data-hide="phone,tablet">Acciones</th>
 												</tr>
 											</thead>
@@ -91,7 +90,8 @@
 
 														$ci = &get_instance();
 														$ci->load->model('Bodega_model', 'storage');
-														$query = $ci->storage->rest_on_this_reception($value['id'],$value['advance_supplier_id']);
+
+														/*$query = $ci->storage->rest_on_this_reception($value['id'],$value['advance_supplier_id']);
 
 														$rest = $value['advance_quantity'] - $value['reception_quantity'] - $query->result_array()[0]['rest'];
 														$rest = number_format($rest, 2, '.', ' ');
@@ -100,6 +100,16 @@
 															$complete = '<i class="fa fa-check fa-lg text-success"></i>';
 														} else {
 															$complete = "";
+														}*/
+
+														$complete = "";
+
+														if($value['method_id'] == 1 || $value['method_id'] == 2){
+
+															$adv_id = "(ID: ".$value['advance_supplier_id'].")";
+
+														} else {
+															$adv_id = "";
 														}
 
 														if($value['brand'] != ""){
@@ -119,13 +129,12 @@
 														?>
 															<tr id="tr_<?= $value['id'] ?>">
 																<td><?= $value['id']; ?></td>
-																<td><?= $value['supplier_name']; ?></td>
-																<td><?= $value['advance_supplier_id']; ?></td>			
-																<td><?= $value['method_name'] ?></td>
+																<td><?= $value['supplier_name']; ?></td>		
+																<td><?= ucfirst(strftime("%A %d-%m-%Y", strtotime($value['reception_date']))); ?></td>		
+																<td><?= $value['method_name'] ?> <?= $adv_id ?></td>
 																<td><?= $value['product_name']; ?></td>
 																<td><?= $value['reception_quantity']."<br>".$brands; ?></td>
-																<td><?= ucfirst(strftime("%A %d-%m-%Y", strtotime($value['reception_date']))); ?></td>
-																<td><?= $rest.' '.$complete; ?></td>	
+																<td><?= $value['reception_amount']; ?></td>	
 																<td>
 																	&nbsp;
 																	<?= $note; ?>
@@ -137,7 +146,7 @@
 																	</a>
 																	&nbsp;	
 																	&nbsp;
-																	<a class="text-danger" href="#modal-delete" data-toggle="modal" title="Eliminar Recepción" onclick="javascript:set_modal_delete(<?= $value['id'] ?>,<?= $value['method_id'] ?>,<?= $value['advance_supplier_id'] ?>)">
+																	<a class="text-danger" href="#modal-delete" data-toggle="modal" title="Eliminar Recepción" onclick="javascript:set_modal_delete(<?= $value['id'] ?>)">
 																		<i class="fa fa-trash fa-lg"></i>
 																	</a>
 																	&nbsp;													
@@ -237,33 +246,22 @@
 											<section class="col col-6">
 												<label class="label"><strong>Precio Unitario</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-													<input type="text" name="unit_price" placeholder="Precio Unitario"  required disabled="">
+													<input type="text" name="unit_price" placeholder="Precio Unitario"  required readonly="">
 												</label>
 												<div class="note">
 													Este campo es llenado automáticamente con la información del proveedor
 												</div>
 											</section>
-										</div>
-										<div class="row advance" style="display: none">
-											<section class="col col-6">
-												<label class="label"><strong>Anticipo Correspondiente</strong></label>
-												<label class="input" disabled>
-													<select name="advance_supplier_id" style="width: 100%" class="select2" required disabled="" data-placeholder="Seleccione un anticipo">
 
-														
-													</select> </label>
-											</section>
-
-											<section class="col col-6">
-												<label class="label"><strong>Saldo anticipo</strong></label>
+											<section class="col col-6 advance" style="display: none">
+												<label class="label"><strong>Saldo proveedor</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
-													<input type="text" name="adv_balance" placeholder="Producto por recibir"  required rest="true" readonly="" disabled="">
+													<input type="text" name="adv_balance" placeholder="Saldo proveedor"  required rest="true" readonly="" disabled="">
 												</label>
 												<div class="note">
 													Este campo es llenado automáticamente y no puede ser menor a cero (0)
 												</div>
 											</section>
-											
 										</div>
 										
 
@@ -279,6 +277,28 @@
 												<label class="input"> <i class="icon-prepend fa fa-calendar"></i>
 													<input type="text" name="date" id="date" placeholder="Fecha" required disabled="">
 												</label>
+											</section>
+										</div>
+
+										<div class="row advance" style="display: none">
+											<section class="col col-6">
+												<label class="label"><strong>Producto</strong></label>
+												<label class="input">
+													<select name="product_advance" style="width: 100%" class="select2" required disabled="" data-placeholder="Seleccione un producto">
+														<option></option>
+														
+														<?php 
+
+
+															foreach ($datos['products'] as $key => $value) {
+																?>
+																	<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
+																<?php
+															}
+
+
+														 ?>
+													</select> </label>
 											</section>
 										</div>
 

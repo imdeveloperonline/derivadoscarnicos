@@ -638,18 +638,13 @@ class Finanzas extends CI_Controller {
 		echo $rest;
 	}
 
-	public function get_rest_amount_advance()
+	public function get_supplier_balance()
 	{
-		$advance_id = $_POST['id'];
+		$supplier_id = $_POST['supplier_id'];
 
-		$array = $this->finances->get_rest_amount_advance($advance_id);
-		/*$rest = $query->result_array()[0]['rest'];
-
-		if($rest == NULL) {
-			$rest = $query->result_array()[0]['quantity'];
-		}*/
-
-		echo json_encode($array);
+		$balance = $this->finances->get_supplier_balance($supplier_id);
+		
+		echo $balance;
 	}
 
 	public function get_rest_advance_exclude_this()
