@@ -75,6 +75,7 @@
 													<th data-hide="phone,tablet">Teléfono</th>
 													<th data-hide="phone,tablet">E-mail</th>
 													<th data-hide="phone,tablet">Frigoríficos</th>
+													<th data-hide="phone,tablet">Saldo de anticipos</th>
 													<th data-hide="phone,tablet">Acciones</th>
 												</tr>
 											</thead>
@@ -103,6 +104,10 @@
 															}
 															$shambles .= "</ol>";
 
+															$ci->load->model("Finanzas_model","finances");
+
+															$advance_balance = $ci->finances->get_supplier_balance($value['id']);
+
 														?>
 															<tr id="tr_<?= $value['id'] ?>">
 																<td><?= $value['id']; ?></td>
@@ -110,7 +115,8 @@
 																<td><?= $value['department_name'] ." - ".$value['city_name']; ?></td>
 																<td><?= $value['phone']; ?></td>
 																<td><?= $value['email']; ?></td>
-																<td><?= $shambles ?></td>													
+																<td><?= $shambles ?></td>
+																<td><?= $advance_balance ?></td>													
 																<td>
 																	&nbsp;
 																	<a href="<?= base_url() . 'proveedores/detalle/' . $value['id']; ?>">
