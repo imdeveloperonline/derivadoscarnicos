@@ -153,7 +153,7 @@
 						</ul>
 					</li>
 
-					<?php if(in_array($_SESSION['profile'], array(1,2,3))) { ?>
+					<?php if(in_array($_SESSION['profile'], array(1,2,3,4))) { ?>
 					<li>
 						<a href="#"><i class="fa fa-lg fa-fw fa-cogs"></i> <span class="menu-item-parent">Sistema</span></a>
 						<ul>
@@ -185,7 +185,7 @@
 								</ul>
 							</li>
 							<?php } ?>
-							<?php if(in_array($_SESSION['profile'], array(1,2,3))) { ?>
+							<?php if(in_array($_SESSION['profile'], array(1,2,3,4))) { ?>
 							<li>
 								<a href="#"><span class="menu-item-parent">Reportes</span></a>
 								<ul>
@@ -197,7 +197,7 @@
 										<a href="<?= base_url() ?>reportes/departamentos">Departamentos</a>
 									</li>
 									<?php } ?>
-									<?php if(in_array($_SESSION['profile'], array(1,2,3))) { ?>
+									<?php if(in_array($_SESSION['profile'], array(1,2,3,4))) { ?>
 									<li <?php if($page == 'report_suppliers') { echo 'class="active"'; } ?>>
 										<a href="<?= base_url() ?>reportes/proveedores">Proveedores</a>
 									</li>
@@ -210,9 +210,11 @@
 										<a href="<?= base_url() ?>reportes/bodega">Bodega</a>
 									</li>
 									<?php } ?>
+									<?php if(in_array($_SESSION['profile'], array(1,2,3))) { ?>
 									<li <?php if($page == 'report_regionals') { echo 'class="active"'; } ?>>
 										<a href="<?= base_url() ?>reportes/regionales">Regionales</a>
 									</li> 
+									<?php } ?>
 								</ul>
 							</li>
 							<?php } ?>

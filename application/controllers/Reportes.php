@@ -9,7 +9,7 @@ class Reportes extends CI_Controller {
 		if($_SESSION['logged'] != TRUE || !isset($_SESSION['logged'])) {
 			redirect('login/logout');
 		}
-		if(!in_array($_SESSION['profile'],array(1,2,3))) {
+		if(!in_array($_SESSION['profile'],array(1,2,3,4))) {
 			exit("Database Error");
 		}
 		$this->load->helper('numbers');
