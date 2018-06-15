@@ -913,15 +913,14 @@ class Bodega extends CI_Controller {
 
 		foreach ($query->result_array() as $key => $value) {
 			
-			$query_rest = $this->storage->rest_on_this_reception($value['id'],$value['advance_supplier_id']);
+			$complete = "";
 
-			$rest = $value['advance_quantity'] - $value['reception_quantity'] - $query_rest->result_array()[0]['rest'];
-			$rest = number_format($rest, 2, '.', ' ');
+			if($value['method_id'] == 1 || $value['method_id'] == 2){
 
-			if($rest == 0){
-				$pagado = '<i class="fa fa-check fa-lg text-success"></i>';
+				$adv_id = "(ID: ".$value['advance_supplier_id'].")";
+
 			} else {
-				$pagado = "";
+				$adv_id = "";
 			}
 
 			if($value['brand'] != ""){
@@ -941,14 +940,12 @@ class Bodega extends CI_Controller {
 			?>
 				<tr id="tr_<?= $value['id'] ?>">
 					<td><?= $value['id']; ?></td>
-					<td><?= $value['supplier_name']; ?></td>
-					<td><?= $value['advance_supplier_id']; ?></td>
-					<td><?= $value['method_name']; ?></td>
+					<td><?= $value['supplier_name']; ?></td>		
+					<td><?= ucfirst(strftime("%A %d-%m-%Y", strtotime($value['reception_date']))); ?></td>		
+					<td><?= $value['method_name'] ?> <?= $adv_id ?></td>
 					<td><?= $value['product_name']; ?></td>
 					<td><?= $value['reception_quantity']."<br>".$brands; ?></td>
-					<td><?= ucfirst(strftime("%A %d-%m-%Y", strtotime($value['reception_date']))); ?></td>
-
-					<td><?= $rest.' '.$pagado; ?></td>	
+					<td><?= $value['reception_amount']; ?></td>	
 					<td>
 						&nbsp;
 						<?= $note; ?>
@@ -960,11 +957,11 @@ class Bodega extends CI_Controller {
 						</a>
 						&nbsp;	
 						&nbsp;
-						<a class="text-danger" href="#modal-delete" data-toggle="modal" title="Eliminar Recepción" onclick="javascript:set_modal_delete(<?= $value['id'] ?>,<?= $value['method_id'] ?>,<?= $value['advance_supplier_id'] ?>)">
+						<a class="text-danger" href="#modal-delete" data-toggle="modal" title="Eliminar Recepción" onclick="javascript:set_modal_delete(<?= $value['id'] ?>)">
 							<i class="fa fa-trash fa-lg"></i>
 						</a>
 						&nbsp;													
-						<?php } ?>														
+						<?php } ?>	
 					</td>											
 				</tr>
 			<?php
