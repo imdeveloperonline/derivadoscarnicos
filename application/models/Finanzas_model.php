@@ -270,11 +270,19 @@ class Finanzas_model extends CI_Model {
 	{
 		$advances = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE new_mod = 1 AND supplier_id = ?',array($supplier_id));
 		$receptions = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE new_mod = 1 AND reception.deleted != 1 AND method_id = 3 AND supplier_id = ?',array($supplier_id));
+		$saldo_inicial = $this->db->query('SELECT saldo FROM saldo_final WHERE supplier_id = ?',array($supplier_id));
+
+		if(!empty($saldo_inicial->result_array())){
+			$saldo_inicial = $saldo_inicial->result_array()[0]['saldo'];
+			
+		} else {
+			$saldo_inicial = 0;
+		}
 		
 		$amount_advances = $advances->result_array()[0]['total_amount'];
 		$amount_receptions = $receptions->result_array()[0]['total_amount'];
 
-		$balance = $amount_advances - $amount_receptions;
+		$balance = $saldo_inicial + $amount_advances - $amount_receptions;
 
 		return $balance;
 	}

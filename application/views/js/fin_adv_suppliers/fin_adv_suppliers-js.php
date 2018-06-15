@@ -57,6 +57,18 @@
 		                  	alert(JSON.stringify(error));
 		                }
 		        	});
+
+		        	$.ajax({
+								url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+								type: 'post',
+								data: {supplier_id: supplier_id},
+								success : function(response) {
+									$('input[name="unit_price"]').val(response);
+								},
+								error : function (error) {
+									alert(JSON.stringify(error));
+								}
+							});
 				})
 			})
 		</script>

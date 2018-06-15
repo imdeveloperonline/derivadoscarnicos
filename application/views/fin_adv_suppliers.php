@@ -236,9 +236,16 @@
 
 
 															foreach ($datos['products'] as $key => $value) {
+
+																if($value['id'] == 1) {
+																?>
+																	<option value="<?= $value['id']; ?>" selected="selected"><?= $value['name']; ?></option>
+																<?php
+																} else {
 																?>
 																	<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
 																<?php
+																}
 															}
 
 
@@ -249,7 +256,7 @@
 											<section class="col col-6">
 												<label class="label"><strong>Cantidad</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-tasks"></i>
-													<input type="text" name="quantity" placeholder="Cantidad" required amounts="true">
+													<input type="text" name="quantity" placeholder="Cantidad" amounts="true">
 												</label>
 											</section>
 										</div>
