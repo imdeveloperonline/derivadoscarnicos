@@ -146,7 +146,7 @@
 																	</a>
 																	&nbsp;	
 																	&nbsp;
-																	<a class="text-danger" href="#modal-delete" data-toggle="modal" title="Eliminar Recepción" onclick="javascript:set_modal_delete(<?= $value['id'] ?>)">
+																	<a class="text-danger" href="#modal-delete" data-toggle="modal" title="Eliminar Recepción" onclick="javascript:set_modal_delete(<?= $value['id'] ?>,<?= $value['method_id'] ?>,<?= $value['advance_supplier_id'] ?>)">
 																		<i class="fa fa-trash fa-lg"></i>
 																	</a>
 																	&nbsp;													

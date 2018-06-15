@@ -611,7 +611,7 @@
 	      	
 	      	if(method == 3) {
 	      		var reception_amount = parseFloat($('input[name="quantity"]').val()) * parseFloat($("input[name='unit_price']").val());
-	      		
+
 	      		var params = {
 	      			"supplier_id" : $('select[name="supplier"]').val(),
 	      			"method_id" : method,
@@ -676,8 +676,10 @@
 
 	    <script>
 			
-			function set_modal_delete (id) {
+			function set_modal_delete (id, method, adv) {
 				$('input[name="reception_delete"]').val(id);
+				$('input[name="reception_method"]').val(method);
+				$('input[name="reception_advance"]').val(adv);
 				
 			}
 		</script>
@@ -687,7 +689,9 @@
 			function delete_reception() {        
 				
 		        var params = {
-		          "id" : $('input[name="reception_delete"]').val()
+		          "id" : $('input[name="reception_delete"]').val(),
+		          "method" : $('input[name="reception_method"]').val(),
+		          "advance" : $('input[name="reception_advance"]').val()
 		        }
 
 		        var n = $('input[name="reception_delete"]').val();

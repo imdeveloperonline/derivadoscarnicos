@@ -302,15 +302,14 @@ class Bodega extends CI_Controller {
 	public function delete_reception()
 	{
 		$reception_id = $_POST['id'];
+		$method_id = $_POST['method'];
+		$advance_supplier_id = $_POST['advance'];
 
 		$this->storage->delete_reception($reception_id);
 
 		if($this->db->affected_rows() > 0) {
 
 			if($method_id == 1 || $method_id == 2) {
-
-				$advance_supplier_id = $this->storage->get_reception_adv_supplier($reception_id);
-
 				$this->load->model('Finanzas_model', 'finances');
 				$this->finances->remove_adv_supplier($advance_supplier_id);
 			}
