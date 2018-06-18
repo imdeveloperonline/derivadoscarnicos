@@ -284,6 +284,7 @@ class Finanzas_model extends CI_Model {
 
 		$balance = $saldo_inicial + $amount_advances - $amount_receptions;
 
+		$balance = number_format($balance, 2, '.', '');
 		return $balance;
 	}
 
