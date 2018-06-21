@@ -1459,8 +1459,7 @@ class Reportes extends CI_Controller {
 						<hr>
 						<div>Cantidad Producto: <?= $adv_quantity ?></div>
 						<div>Valor: <?= $adv_amount ?> COP</div>
-						<div>Falta: <?= $adv_rest ?> </div>
-						<div>Deuda: <?= $adv_due ?> COP</div>
+						<div>Saldo actual: <?= $query['balance'] ?></div>
 					</div>
 
 				</div>
