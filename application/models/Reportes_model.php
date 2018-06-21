@@ -110,7 +110,7 @@ class Reportes_model extends CI_Model {
 		$credit_payment = $this->db->query('SELECT credit_payment.id, credit_payment.date, credit_payment.amount, advance_supplier_id FROM credit_payment INNER JOIN advance_supplier ON advance_supplier.id = credit_payment.advance_supplier_id WHERE supplier_id = ? AND advance_supplier.date >= ? AND advance_supplier.date <= ?',array($supplier_id, $startdate, $finishdate));
 
 
-		$advances_balance = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE new_mod = 1 AND supplier_id = ?',array($supplier_id));
+		$advances_balance = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE new_mod = 1 AND supplier_id = ? AND method_id = 3',array($supplier_id));
 		$receptions_balance = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE new_mod = 1 AND reception.deleted != 1 AND method_id = 3 AND supplier_id = ?',array($supplier_id));
 		$saldo_inicial = $this->db->query('SELECT saldo FROM saldo_final WHERE supplier_id = ?',array($supplier_id));
 

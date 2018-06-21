@@ -268,7 +268,7 @@ class Finanzas_model extends CI_Model {
 
 	public function get_supplier_balance($supplier_id)
 	{
-		$advances = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE new_mod = 1 AND supplier_id = ?',array($supplier_id));
+		$advances = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE new_mod = 1 AND method_id = 3 AND supplier_id = ?',array($supplier_id));
 		$receptions = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE new_mod = 1 AND reception.deleted != 1 AND method_id = 3 AND supplier_id = ?',array($supplier_id));
 		$saldo_inicial = $this->db->query('SELECT saldo FROM saldo_final WHERE supplier_id = ?',array($supplier_id));
 
