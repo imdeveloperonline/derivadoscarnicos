@@ -50,7 +50,7 @@
 					<li>
 						<a href="#"><i class="fa fa-lg fa-fw fa-line-chart"></i> <span class="menu-item-parent">Finanzas</span></a>
 						<ul>
-							<?php if(in_array($_SESSION['profile'],array(1,2,3))) { ?>
+							<?php if(in_array($_SESSION['profile'],array(1,2,3,4))) { ?>
 							<li>
 								<a href="#"><span class="menu-item-parent">Trans. Proveedores</span></a>
 								<ul>
