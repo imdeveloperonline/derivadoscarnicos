@@ -64,4 +64,31 @@ $.datepicker.regional['es'] = {
  $.datepicker.setDefaults($.datepicker.regional['es']);
 
 
+function numberFront(name) {
+                
+    var element = document.querySelector("input[name='"+name+"']");
 
+    var number = String(element.value);
+
+    if(number.indexOf(",") != -1){
+        // Tiene coma
+        var number_split = number.split(",");
+
+        var entero = number_split[0];
+        var decimal = number_split[1];
+
+        entero = entero.replace(/\D/g, "");
+        entero = Number(entero).toLocaleString();
+
+        decimal = decimal.substr(0,2);
+
+        return entero+","+decimal;
+
+    } else {
+        var entero = number.replace(/\D/g, "");
+        entero = Number(entero).toLocaleString();
+
+        return entero;
+    }
+    
+}
