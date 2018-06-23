@@ -92,3 +92,25 @@ function numberFront(name) {
     }
     
 }
+
+function stringToNumber(string) {
+
+    if(string.indexOf(",") != -1){
+        var number = string.split(",");
+        var entero = number[0];
+        var decimal = number[1];
+
+        entero = entero.replace(/\D/g,"");
+
+        number = entero+"."+decimal;
+
+        return Number(number);
+
+    } else {
+        var number = string;
+        var entero = number.replace(/\D/g,"");
+
+        return Number(number);
+    }
+
+ }
