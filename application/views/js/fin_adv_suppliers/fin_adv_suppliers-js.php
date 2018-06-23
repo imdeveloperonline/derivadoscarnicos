@@ -16,7 +16,7 @@
 
 		<script>
 			
-			$(function(){
+			/*$(function(){
 				$('input[name="quantity"]').change(function(){
 					var amount = $('input[name="amount"]').val();
 					var quantiy = $('input[name="quantity"]').val();
@@ -35,7 +35,7 @@
 					$('input[name="unit_price"]').val(unit_price.toFixed(2));
 
 				});
-			});
+			});*/
 
 			$(function(){
 				$("select[name='supplier']").change(function(){
@@ -63,7 +63,7 @@
 								type: 'post',
 								data: {supplier_id: supplier_id},
 								success : function(response) {
-									$('input[name="unit_price"]').val(response);
+									$('input[name="unit_price"]').val(numberToString(response));
 								},
 								error : function (error) {
 									alert(JSON.stringify(error));
@@ -201,22 +201,24 @@
 		</script>
 
 		<script>
-      		
+
 	      function new_adv_supplier() { 
+
+	      	var amount = stringToNumber($('input[name="amount"]').val());
+	      	var unit_price = stringToNumber($('input[name="unit_price"]').val());
 
 	          var params = {
 
 	                "supplier_id" : $('select[name="supplier"]').val(),
-	                "amount" : $('input[name="amount"]').val(),
+	                "amount" : amount,
 	                "product_id" : $('select[name="product"]').val(),
 	                "quantity" : $('input[name="quantity"]').val(),
 	                "date" : $('input[name="date"]').val(),
-	                "unit_price" : $('input[name="unit_price"]').val(),
+	                "unit_price" : unit_price,
 	                "detail" : $('textarea[name="details"]').val()
 	            
 	          };
 	          
-
 	         $.ajax({
 	                data:  {data:params},
 	                url:   '<?= base_url(); ?>finanzas/new_adv_supplier',

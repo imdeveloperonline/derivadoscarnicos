@@ -219,7 +219,7 @@
 											<section class="col col-6">
 												<label class="label"><strong>Monto (COP)</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-money"></i>
-													<input type="text" name="amount" placeholder="Monto (COP)" required  amounts="true">
+													<input type="text" name="amount" placeholder="Monto (COP)" required  amounts="true"  onkeyup="this.value = numberFront('amount')">
 												</label>
 											</section>
 										</div>
