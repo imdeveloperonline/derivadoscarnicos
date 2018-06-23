@@ -94,6 +94,7 @@
 														$ci->load->model('Finanzas_model','finances');
 														$query = $ci->finances->get_rest_advance($value['id']);
 														$rest = $query->result_array();
+														$ci->load->helper('numbers');
 
 														if($rest[0]['rest'] == 0){
 															$pagado = '<i class="fa fa-check fa-lg text-success"></i>';
@@ -117,7 +118,7 @@
 																<td><?= $value['id']; ?></td>
 																<td><?= $value['supplier_name']; ?></td>
 																<td><?= $value['regional_name']; ?></td>
-																<td><?= $value['amount']; ?></td>
+																<td><?= latin_format_number($value['amount']) ?></td>
 																<td><?= $value['product_name']; ?></td>
 																<td><?= $value['quantity']; ?></td>
 																<td><?= strftime('%A %d-%m-%Y',strtotime($value['date'])); ?></td>
