@@ -25,7 +25,7 @@ $(function() {
 
 $(function(){
     $.validator.addMethod("amounts", function(value, element) {
-        return /^[0-9]*$|^[0-9]*([.][0-9]{2})$|^$/i.test(value);
+        return /^(.*)$|^$/i.test(value);
     }, "Debe ingresar un entero o un decimal de dos (2) dígitos separados por un punto (.)");
 
     $.validator.addMethod("rest", function(value, element) {
