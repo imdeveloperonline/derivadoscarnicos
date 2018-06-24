@@ -10,7 +10,7 @@
 			$(function(){
 				$("input[name='quantity_credit']").change(function(){
 					
-					var unit_price = $("input[name='unit_price']").val();
+					var unit_price = stringToNumber($("input[name='unit_price']").val());
 
 					if(unit_price == "" || unit_price == null) {
 						unit_price = 0;
@@ -19,7 +19,7 @@
 					var quantity = $("input[name='quantity_credit']").val();
 					var amount = parseFloat(quantity) * parseFloat(unit_price);
 
-					$("input[name='amount_credit']").val(amount); 
+					$("input[name='amount_credit']").val(numberToString(amount)); 
 				})
 			})
 
@@ -95,7 +95,7 @@
 					
 					if(typeof adv_balance != "undefined") {
 						var quantity = $('input[name="quantity"]').val();
-						var unit_price = $('input[name="unit_price"]').val();
+						var unit_price = stringToNumber($('input[name="unit_price"]').val());
 						var reception_rest = adv_balance - (quantity*unit_price);
 
 						if(reception_rest < 0) {
@@ -111,7 +111,7 @@
 						}
 
 
-						$('input[name="adv_balance"]').val(reception_rest.toFixed(2));
+						$('input[name="adv_balance"]').val(numberToString(reception_rest.toFixed(2)));
 					} else {
 						var valid = $('select[name="supplier"]').valid();
 
@@ -125,7 +125,7 @@
 								data: {supplier_id: supplier_id},
 								success : function(response) {
 									adv_balance = response;
-									$("input[name='adv_balance']").val(response);
+									$("input[name='adv_balance']").val(numberToString(response));
 								},
 								error : function (error) {
 									alert(JSON.stringify(error));
@@ -137,7 +137,7 @@
 								type: 'post',
 								data: {supplier_id: supplier_id},
 								success : function(response) {
-									$('input[name="unit_price"]').val(response);
+									$('input[name="unit_price"]').val(numberToString(response));
 									$("select[name='product']").select2();
 									$("select[name='product']").val(1);
 									$("select[name='product']").find('option[value="1"]').prop('selected', true).change();
@@ -291,7 +291,7 @@
 							data: {supplier_id: supplier_id},
 							success : function(response) {
 								adv_balance = response;
-								$("input[name='adv_balance']").val(response);
+								$("input[name='adv_balance']").val(numberToString(response));
 							},
 							error : function (error) {
 								alert(JSON.stringify(error));
@@ -303,7 +303,7 @@
 							type: 'post',
 							data: {supplier_id: supplier_id},
 							success : function(response) {
-								$('input[name="unit_price"]').val(response);
+								$('input[name="unit_price"]').val(numberToString(response));
 								$("select[name='product']").select2();
 								$("select[name='product']").val(1);
 								$("select[name='product']").find('option[value="1"]').prop('selected', true).change();
@@ -369,7 +369,7 @@
 							type: 'post',
 							data: {supplier_id: supplier_id},
 							success : function(response) {
-								$('input[name="unit_price"]').val(response);
+								$('input[name="unit_price"]').val(numberToString(response));
 								$("select[name='product']").select2();
 								$("select[name='product']").val(1);
 								$("select[name='product']").find('option[value="1"]').prop('selected', true).change();
@@ -421,7 +421,7 @@
 						data: {supplier_id: supplier_id},
 						success : function(response) {
 							adv_balance = response;
-							$("input[name='adv_balance']").val(response);
+							$("input[name='adv_balance']").val(numberToString(response));
 						},
 						error : function (error) {
 							alert(JSON.stringify(error));
@@ -433,7 +433,7 @@
 						type: 'post',
 						data: {supplier_id: supplier_id},
 						success : function(response) {
-							$('input[name="unit_price"]').val(response);
+							$('input[name="unit_price"]').val(numberToString(response));
 							$("select[name='product']").select2();
 							$("select[name='product']").val(1);
 							$("select[name='product']").find('option[value="1"]').prop('selected', true).change();
@@ -527,7 +527,7 @@
 								success : function(response) {
 									$("#message-form").remove();
 									if(response > 0) {
-										 $('<div id="message-form" class="alert alert-block alert-warning"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>Este proveedor tiene saldo de '+response+' COP en anticipos.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
+										 $('<div id="message-form" class="alert alert-block alert-warning"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>Este proveedor tiene saldo de '+numberToString(response)+' COP en anticipos.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
 									} 
 								},
 								error : function (error) {
@@ -541,7 +541,7 @@
 							type: 'post',
 							data: {supplier_id: supplier_id},
 							success : function(response) {
-								$('input[name="unit_price"]').val(response);
+								$('input[name="unit_price"]').val(numberToString(response));
 								$("select[name='product']").select2();
 								$("select[name='product']").val(1);
 								$("select[name='product']").find('option[value="1"]').prop('selected', true).change();
@@ -603,20 +603,22 @@
 
 	      	var method = $('select[name="method"]').val();
 
-	      	var shamble_amount = $('input[name="shamble_amount"]').val();
+	      	var shamble_amount = stringToNumber($('input[name="shamble_amount"]').val());
 	      	if(shamble_amount == "") {
 	      		shamble_amount = 0;
 	      	} 
-
+	      	
+	      	var unit_price = stringToNumber($("input[name='unit_price']").val());
+	      	var amount_credit = stringToNumber($("input[name='amount_credit']").val());
 	      	
 	      	if(method == 3) {
-	      		var reception_amount = parseFloat($('input[name="quantity"]').val()) * parseFloat($("input[name='unit_price']").val());
+	      		var reception_amount = parseFloat($('input[name="quantity"]').val()) * parseFloat(unit_price);
 
 	      		var params = {
 	      			"supplier_id" : $('select[name="supplier"]').val(),
 	      			"method_id" : method,
 	      			"product_id" : $('select[name="product_advance"]').val(),
-	      			"unit_price" : $("input[name='unit_price']").val(),
+	      			"unit_price" : unit_price,
 	      			"reception_amount" : reception_amount,
 	      			"quantity" : $('input[name="quantity"]').val(),
 	      			"date" : $('input[name="date"]').val(),
@@ -630,9 +632,9 @@
 	      			"supplier_id" : $('select[name="supplier"]').val(),
 	      			"method_id" : method,
 	      			"product_id" : $('select[name="product"]').val(),
-	      			"unit_price" : $("input[name='unit_price']").val(),
-	      			"reception_amount" : $("input[name='amount_credit']").val(),
-	      			"amount" : $('input[name="amount_credit"]').val(),
+	      			"unit_price" : unit_price,
+	      			"reception_amount" : amount_credit,
+	      			"amount" : amount_credit,
 	      			"quantity" : $('input[name="quantity_credit"]').val(),
 	      			"date" : $('input[name="date_credit"]').val(),
 	      			"brand" : $('textarea[name="brand"]').val(),

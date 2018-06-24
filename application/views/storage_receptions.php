@@ -90,6 +90,7 @@
 
 														$ci = &get_instance();
 														$ci->load->model('Bodega_model', 'storage');
+														$ci->load->helper('numbers');
 
 														/*$query = $ci->storage->rest_on_this_reception($value['id'],$value['advance_supplier_id']);
 
@@ -134,7 +135,7 @@
 																<td><?= $value['method_name'] ?> <?= $adv_id ?></td>
 																<td><?= $value['product_name']; ?></td>
 																<td><?= $value['reception_quantity']."<br>".$brands; ?></td>
-																<td><?= $value['reception_amount']; ?></td>	
+																<td><?= latin_format_number($value['reception_amount']) ?></td>	
 																<td>
 																	&nbsp;
 																	<?= $note; ?>
@@ -333,7 +334,7 @@
 											<section class="col col-6">
 												<label class="label"><strong>Valor (COP)</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-													<input type="text" name="amount_credit" placeholder="Valor (COP)" required amounts="true" disabled="">
+													<input type="text" name="amount_credit" placeholder="Valor (COP)" required amounts="true" disabled="" onkeyup="this.value = numberFront('amount_credit')">
 												</label>
 											</section>
 											<section class="col col-6">
@@ -356,7 +357,7 @@
 											<section class="col col-6">
 												<label class="label"><strong>Gasto Frigorífico</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-													<input type="text" name="shamble_amount" placeholder="Gasto Frigorífico" >
+													<input type="text" name="shamble_amount" placeholder="Gasto Frigorífico" onkeyup="this.value = numberFront('shamble_amount')">
 												</label>
 											</section>
 										</div>
