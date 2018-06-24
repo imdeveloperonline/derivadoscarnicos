@@ -25,11 +25,11 @@ $(function() {
 
 $(function(){
     $.validator.addMethod("amounts", function(value, element) {
-        return /^(.*)$|^$/i.test(value);
-    }, "Debe ingresar un entero o un decimal de dos (2) dígitos separados por un punto (.)");
+        return /^[0-9\.]+$|^[0-9\.]+([\,][0-9]{2})$/i.test(value);
+    }, "Debe ingresar un entero o un decimal de dos (2) dígitos separados por una coma (,)");
 
     $.validator.addMethod("rest", function(value, element) {
-        return /^[0-9]+$|^[0-9]+([.][0-9]{2})$/i.test(value);
+        return /^[0-9\.]+$|^[0-9\.]+([\,][0-9]{2})$/i.test(value);
     }, "Este valor no puede ser menos que cero (0)");
 
     $.validator.addMethod("date", function(value, element) {
@@ -94,7 +94,13 @@ function numberFront(name) {
 }
 
 function numberToString(number) {
-    number = String(number);
+    var number = String(number);
+
+    if(number.indexOf("-") != -1){
+        var negativo = "-";
+    } else {
+        var negativo = "";
+    }
 
     if(number.indexOf(".") != -1){
         // Tiene coma
@@ -108,13 +114,13 @@ function numberToString(number) {
 
         decimal = decimal.substr(0,2);
 
-        return entero+","+decimal;
+        return negativo+entero+","+decimal;
 
     } else {
         var entero = number.replace(/\D/g, "");
         entero = Number(entero).toLocaleString();
 
-        return entero;
+        return negativo+entero;
     }
     
 }
