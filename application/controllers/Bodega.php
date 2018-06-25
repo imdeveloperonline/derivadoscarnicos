@@ -911,6 +911,7 @@ class Bodega extends CI_Controller {
 	public function get_last_reception()
 	{
 		$query = $this->storage->get_last_reception();
+		$this->load->helper('numbers');
 
 		foreach ($query->result_array() as $key => $value) {
 			
@@ -946,7 +947,7 @@ class Bodega extends CI_Controller {
 					<td><?= $value['method_name'] ?> <?= $adv_id ?></td>
 					<td><?= $value['product_name']; ?></td>
 					<td><?= $value['reception_quantity']."<br>".$brands; ?></td>
-					<td><?= $value['reception_amount']; ?></td>	
+					<td><?= latin_format_number($value['reception_amount']) ?></td>	
 					<td>
 						&nbsp;
 						<?= $note; ?>
