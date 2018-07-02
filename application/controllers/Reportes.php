@@ -2600,8 +2600,8 @@ $uri = $_SERVER["REQUEST_URI"];
 		 $this->email->initialize($configGmail);
 		 
 		 $this->email->from('no-reply@derivadoscarnicos.com');
-		 $this->email->to("martinrmf@gmail.com");
-		 $this->email->subject('Alerta de Derivados Cárnicos');
+		 $this->email->to("pagosderivadoscarnicos@gmail.com");
+		 $this->email->subject('Saldos de Proveedores');
 
 		 $this->email->message($html);
 		 
