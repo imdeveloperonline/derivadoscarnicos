@@ -1,14 +1,5 @@
 <?php
  
-	/* Verificar sesión */
-	$logged = $_SESSION['logged'] ?? FALSE;
-	if($logged != TRUE) {
-
-		$this->session->set_flashdata('no-logged',TRUE);
-
-		header('Location: ' . base_url());
-	} 
-
 	/* Prepara js's y funciones propio de la vista */
 	$dato['js'] = "";
 	$dato['script'] = "";

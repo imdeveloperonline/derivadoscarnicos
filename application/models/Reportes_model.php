@@ -229,6 +229,55 @@ class Reportes_model extends CI_Model {
 
 	}
 
+	public function get_suppliers_balance()
+	{
+		$suppliers = $this->db->query('SELECT id, tradename, name_method, rut_method, bankcenter_method, account_method FROM supplier WHERE deleted != 1');
+
+
+		$result_array = [];
+		$supplier_id = 0;
+		foreach ($suppliers->result_array() as $key => $value) {
+			$supplier_id = $value['id'];
+
+			$banks = $this->db->query('SELECT bank, account, name, rut, type_account FROM supplier_bank WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
+			$centers = $this->db->query('SELECT center, location, name, rut FROM supplier_center WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
+			
+			$advances_balance = $this->db->query('SELECT SUM(amount) AS total_amount FROM advance_supplier WHERE new_mod = 1 AND supplier_id = ? AND method_id = 3',array($supplier_id));
+			$receptions_balance = $this->db->query('SELECT SUM(reception_amount) AS total_amount FROM reception WHERE new_mod = 1 AND reception.deleted != 1 AND method_id = 3 AND supplier_id = ?',array($supplier_id));
+			$saldo_inicial = $this->db->query('SELECT saldo FROM saldo_final WHERE supplier_id = ?',array($supplier_id));
+
+			if(!empty($saldo_inicial->result_array())){
+				$saldo_inicial = $saldo_inicial->result_array()[0]['saldo'];
+				
+			} else {
+				$saldo_inicial = 0;
+			}
+			
+			$amount_advances = $advances_balance->result_array()[0]['total_amount'];
+			$amount_receptions = $receptions_balance->result_array()[0]['total_amount'];
+
+			$balance = $saldo_inicial + $amount_advances - $amount_receptions;
+			// $balance = number_format($balance, 2, '.', '');
+
+			if($balance < 100000 && $balance > 0) {
+				$result_array[] = array(
+					"supplier_id" => $supplier_id,
+					"tradename" => $value['tradename'],
+					"balance" => $balance,
+					"name" => $value['name_method'],
+					"rut" => $value['rut_method'],
+					"bank" => $value['bankcenter_method'],
+					"account" => $value['account_method'],
+					"banks" => $banks->result_array(),
+					"centers" => $centers->result_array()
+				);
+			}
+
+		}
+
+		return $result_array;
+	}
+
 }
 
 /* End of file Reportes_model.php */

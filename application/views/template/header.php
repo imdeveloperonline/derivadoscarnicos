@@ -1,8 +1,4 @@
-<?php if(!isset($_COOKIE['SID_ADM_APP'])) {
-	redirect('login');
-	exit();
-} 
-
+<?php 
 header('Content-Type: text/html; charset=UTF-8');
 setlocale(LC_ALL,"es_ES.UTF-8");
 ?>

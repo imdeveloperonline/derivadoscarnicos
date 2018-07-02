@@ -6,12 +6,6 @@ class Reportes extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('Reportes_model', 'reports');
-		if($_SESSION['logged'] != TRUE || !isset($_SESSION['logged'])) {
-			redirect('login/logout');
-		}
-		if(!in_array($_SESSION['profile'],array(1,2,3,4))) {
-			exit("Database Error");
-		}
 		$this->load->helper('numbers');
 	}
 
@@ -25,7 +19,17 @@ class Reportes extends CI_Controller {
 		$this->load->model('Regionales_model', 'regionals');
 
 		$regionals = $this->regionals->get_regionals();
+$uri = $_SERVER["REQUEST_URI"];
 
+	 	if(preg_match("/(.*)cron_alert$/",$uri) == TRUE || preg_match("/(.*)cron_alert\/$/",$uri) == TRUE){
+			echo "YES";
+		} else {
+			echo "NO";
+			/*if(!isset($_SESSION['logged']) || $_SESSION['logged'] != TRUE)
+			 {
+			 	redirect(base_url());
+			 } 		*/ 
+	 	}
 		$dato['recursos'] = array(
 				"regionals" => $regionals->result_array()
 			);
@@ -2527,6 +2531,87 @@ class Reportes extends CI_Controller {
 		</script>
 		<?php
 
+	}
+
+	public function cron_alert()
+	{
+
+		$query = $this->reports->get_suppliers_balance();
+
+		$html = "<h1>Saldo de Proveedores al ".date("d-m-Y")."</h1>";
+		foreach ($query as $key => $value) {
+			$html .= "<h2><small>Proveedor: (".$value['supplier_id'].")</small> ".strtoupper($value['tradename'])."</h2>";
+			$html .= "<div style='margin-left: 30px'>";
+			$html .= "<h4><small>Saldo:</small> ".$value['balance']."</h4>";
+			$html .= "<h3>Medio de Pago Principal</h3>";
+			$html .= "<p>Nombre: ".$value['name']."</p>";
+			$html .= "<p>Rut: ".$value['rut']."</p>";
+			$html .= "<p>Banco: ".$value['bank']."</p>";
+			$html .= "<p>Cuenta: ".$value['account']."</p>";
+
+			if(!empty($value['banks']) || !empty($value['centers']))
+			{
+				$html .= "<h3>Otros Medios de Pago</h3>";
+				if(!empty($value['banks'])){
+					foreach ($value['banks'] as $k => $v) {
+						$html .= "<h4>Bancos</h4>";
+						$html .= "<div style='margin-left: 30px'>";
+						$html .= "<p>Nombre: ".$v['name']."</p>";
+						$html .= "<p>Rut: ".$v['rut']."</p>";
+						$html .= "<p>Banco: ".$v['bank']."</p>";
+						$html .= "<p>Cuenta: ".$v['account']."</p>";
+						$html .= "<p>Tipo de Cuenta: ".$v['type_account']."</p>";
+						$html .= "</div>";
+					}
+				}
+
+				if(!empty($value['centers'])){
+					foreach ($value['centers'] as $clave => $valor) {
+						$html .= "<h4>Centros de Pago</h4>";
+						$html .= "<div style='margin-left: 30px'>";
+						$html .= "<p>Nombre: ".$valor['name']."</p>";
+						$html .= "<p>Centro: ".$valor['center']."</p>";
+						$html .= "<p>Lugar: ".$valor['location']."</p>";
+						$html .= "<p>Rut: ".$valor['rut']."</p>";
+						$html .= "</div>";
+					}
+				}
+			}
+
+			$html .= "</div>";
+			$html .= "<br><br>";
+
+		}
+
+		$this->load->library("email");
+
+		$configGmail = array(
+			'protocol' => 'smtp',
+			'smtp_host' => 'mail.derivadoscarnicos.com',
+			'smtp_port' => 26,
+			'smtp_user' => 'no-reply@derivadoscarnicos.com',
+			'smtp_pass' => '71@u[OhS%=}6',
+			'mailtype' => 'html',
+			'charset' => 'utf-8',
+			'newline' => "\r\n"
+			);  
+
+ 		/*Load configuration*/
+		 $this->email->initialize($configGmail);
+		 
+		 $this->email->from('no-reply@derivadoscarnicos.com');
+		 $this->email->to("martinrmf@gmail.com");
+		 $this->email->subject('Alerta de Derivados Cárnicos');
+
+		 $this->email->message($html);
+		 
+		 if($this->email->send()) {
+		 	echo "Email enviado";
+		 } else {
+		 	echo "Error al enviar email";
+		 }
+
+		$this->output->enable_profiler(TRUE);
 	}
 
 }

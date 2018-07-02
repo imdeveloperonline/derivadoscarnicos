@@ -26,7 +26,7 @@ setlocale(LC_ALL,"es_ES.UTF-8");
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = "http://localhost/codeigniter";
+$config['base_url'] = 'http://app.derivadoscarnicos.com';
 
 /*
 |--------------------------------------------------------------------------
@@ -381,7 +381,7 @@ $config['encryption_key'] = '';
 |
 */
 $config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'DC_APP_SESSION';
+$config['sess_cookie_name'] = 'DC_APP_SESS';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
