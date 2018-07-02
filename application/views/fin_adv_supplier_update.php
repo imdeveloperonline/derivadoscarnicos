@@ -16,7 +16,7 @@
 				Editar
 			</li>
 			<li>
-				Antiicipo Proveedor
+				Anticipo Proveedor
 			</li>
 		</ol>
 
