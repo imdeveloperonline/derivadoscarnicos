@@ -99,7 +99,7 @@
 		<script src="<?= base_url() ?>assets/js/smart-chat-ui/smart.chat.ui.min.js"></script>
 		<script src="<?= base_url() ?>assets/js/smart-chat-ui/smart.chat.manager.min.js"></script>
 
-		<script src="<?= base_url() ?>assets/js/my.js?ver=1.1"></script>
+		<script src="<?= base_url() ?>assets/js/my.js?ver=1.2"></script>
 		
 		<?php echo $js ?>
 

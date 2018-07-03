@@ -19,17 +19,7 @@ class Reportes extends CI_Controller {
 		$this->load->model('Regionales_model', 'regionals');
 
 		$regionals = $this->regionals->get_regionals();
-$uri = $_SERVER["REQUEST_URI"];
 
-	 	if(preg_match("/(.*)cron_alert$/",$uri) == TRUE || preg_match("/(.*)cron_alert\/$/",$uri) == TRUE){
-			echo "YES";
-		} else {
-			echo "NO";
-			/*if(!isset($_SESSION['logged']) || $_SESSION['logged'] != TRUE)
-			 {
-			 	redirect(base_url());
-			 } 		*/ 
-	 	}
 		$dato['recursos'] = array(
 				"regionals" => $regionals->result_array()
 			);
@@ -2542,7 +2532,17 @@ $uri = $_SERVER["REQUEST_URI"];
 		foreach ($query as $key => $value) {
 			$html .= "<h2><small>Proveedor: (".$value['supplier_id'].")</small> ".strtoupper($value['tradename'])."</h2>";
 			$html .= "<div style='margin-left: 30px'>";
-			$html .= "<h4><small>Saldo:</small> ".$value['balance']."</h4>";
+
+			foreach ($value['regional'] as $x => $y) {
+				$html .= "<p><small>Regional:</small> <strong>".$y['name']."</strong></p>";
+			}
+
+			$html .= "<p><small>Saldo:</small> <strong>".$value['balance']."</strong></p>";
+
+			if(!empty($value['advance'])){
+				$html .= "<p><small>Valor de último anticipo:</small> <strong>".$value['advance'][0]['amount']."</strong></p>";
+			}
+			$html .= "<br>";
 			$html .= "<h3>Medio de Pago Principal</h3>";
 			$html .= "<p>Nombre: ".$value['name']."</p>";
 			$html .= "<p>Rut: ".$value['rut']."</p>";
@@ -2610,7 +2610,6 @@ $uri = $_SERVER["REQUEST_URI"];
 		 } else {
 		 	echo "Error al enviar email";
 		 }
-
 		$this->output->enable_profiler(TRUE);
 	}
 

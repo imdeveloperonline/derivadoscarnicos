@@ -77,8 +77,8 @@ function numberFront(name) {
         var entero = number_split[0];
         var decimal = number_split[1];
 
-        entero = entero.replace(/\D/g, "");
-        entero = Number(entero).toLocaleString();
+        entero = entero.replace(/\D/g, "");'de-DE'
+        entero = Number(entero).toLocaleString('de-DE');
 
         decimal = decimal.substr(0,2);
 
@@ -86,7 +86,7 @@ function numberFront(name) {
 
     } else {
         var entero = number.replace(/\D/g, "");
-        entero = Number(entero).toLocaleString();
+        entero = Number(entero).toLocaleString('de-DE');
 
         return entero;
     }
@@ -110,7 +110,7 @@ function numberToString(number) {
         var decimal = number_split[1];
 
         entero = entero.replace(/\D/g, "");
-        entero = Number(entero).toLocaleString();
+        entero = Number(entero).toLocaleString('de-DE');
 
         decimal = decimal.substr(0,2);
 
@@ -118,7 +118,7 @@ function numberToString(number) {
 
     } else {
         var entero = number.replace(/\D/g, "");
-        entero = Number(entero).toLocaleString();
+        entero = Number(entero).toLocaleString('de-DE');
 
         return negativo+entero;
     }

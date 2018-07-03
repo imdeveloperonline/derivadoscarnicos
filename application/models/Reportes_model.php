@@ -231,13 +231,16 @@ class Reportes_model extends CI_Model {
 
 	public function get_suppliers_balance()
 	{
-		$suppliers = $this->db->query('SELECT id, tradename, name_method, rut_method, bankcenter_method, account_method FROM supplier WHERE deleted != 1');
-
+		$suppliers = $this->db->query('SELECT supplier.id, tradename, name_method, rut_method, bankcenter_method, account_method, department_id FROM supplier INNER JOIN city ON city.id = supplier.city_id WHERE deleted != 1');
 
 		$result_array = [];
 		$supplier_id = 0;
 		foreach ($suppliers->result_array() as $key => $value) {
 			$supplier_id = $value['id'];
+
+			$regional = $this->db->query('SELECT regional.name FROM regional INNER JOIN city ON city.id = regional.city_id WHERE department_id = ?',array($value['department_id']));
+
+			$last_advance = $this->db->query('SELECT amount FROM advance_supplier WHERE supplier_id = ? AND method_id = 3 ORDER BY id DESC LIMIT 1',array($supplier_id));
 
 			$banks = $this->db->query('SELECT bank, account, name, rut, type_account FROM supplier_bank WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
 			$centers = $this->db->query('SELECT center, location, name, rut FROM supplier_center WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
@@ -263,6 +266,8 @@ class Reportes_model extends CI_Model {
 				$result_array[] = array(
 					"supplier_id" => $supplier_id,
 					"tradename" => $value['tradename'],
+					"regional" => $regional->result_array(),
+					"advance" => $last_advance->result_array(),
 					"balance" => $balance,
 					"name" => $value['name_method'],
 					"rut" => $value['rut_method'],
