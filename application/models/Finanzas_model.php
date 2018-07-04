@@ -288,6 +288,20 @@ class Finanzas_model extends CI_Model {
 		return $balance;
 	}
 
+	public function set_complete_credit_pay($advance_supplier_id,$balance)
+	{
+		if($balance != "" && $balance > 0) {
+			$data = array(
+				"date" => date('Y-m-d H:i:s'),
+				"amount" => $balance,
+				"advance_supplier_id" => $advance_supplier_id
+			);
+			return $this->db->insert('credit_payment', $data);
+		} else {
+			return false;
+		}
+	}
+
 }
 
 /* End of file Finanzas_model.php */

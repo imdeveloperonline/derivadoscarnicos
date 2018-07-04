@@ -1067,6 +1067,42 @@ class Finanzas extends CI_Controller {
 		}
 	}
 
+	public function pay_credits()
+	{
+		$advances = $_POST['advances'];
+
+		$this->load->model('Usuarios_model', 'users');
+
+		foreach ($advances as $advance_supplier_id) {
+			$query_balance = $this->finances->get_credit_balance($advance_supplier_id);
+			$balance = $query_balance->result_array()[0]['balance'];
+			$insert = $this->finances->set_complete_credit_pay($advance_supplier_id, $balance);	
+
+			if($insert) {
+				$insert_id = $this->db->insert_id();
+
+				$array = array(
+					"date" => date("Y-m-d H:i:s"),
+					"record_id" => $insert_id,
+					"user_id" => $_SESSION['id'],
+					"operation_id" => 1,
+					"table" => "Pago multiple de creditos"
+
+				);
+
+				$this->users->set_user_operation($array);
+			} 
+
+			$balance = "";
+
+		}
+
+		echo 1;
+
+
+		
+	}
+
 }
 
 /* End of file Finanzas.php */

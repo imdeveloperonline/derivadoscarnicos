@@ -4,7 +4,73 @@
 		<script src="<?= base_url() ?>assets/js/plugin/datatables/dataTables.tableTools.min.js"></script>
 		<script src="<?= base_url() ?>assets/js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 		<script src="<?= base_url() ?>assets/js/plugin/datatable-responsive/datatables.responsive.min.js"></script>
-	
+		
+		<script type="text/javascript">
+			$(function(){
+				
+				$("#all").on("change",function(){
+					var checked = $(this).prop('checked');
+					
+					if(checked) {
+						var table = $('#datatable_tabletools').DataTable();
+						table.rows().every( function () {
+		    
+							var tr = this.node();
+						 
+						   	$(tr).find('.credit_check').prop('checked',true);
+						} );
+					} else {
+						var table = $('#datatable_tabletools').DataTable();
+						table.rows().every( function () {
+		    
+							var tr = this.node();
+						 
+						   	$(tr).find('.credit_check').prop('checked',false);
+						} );
+					}
+				})
+			})
+
+			function pay_credits() {
+				
+				// var elements = $(".credit_check").length;
+
+				var table = $('#datatable_tabletools').DataTable();
+				var array = [];
+				table.rows().every( function () {
+    				
+					var tr = this.node();
+
+					var input = $(tr).find('.credit_check');
+				 
+				   	var is_checked = input.prop('checked');
+
+				   	if(is_checked) {
+				   		var adv_id = input.data('advid');
+				   		
+				   		array.push(adv_id);
+				   	} 				   	
+				});
+
+				$.ajax({
+					url: "<?= base_url() ?>finanzas/pay_credits",
+					type: "post",
+					data: {advances: array},
+					beforeSend: function(){
+						$("#multiple_pays").html("<i class='fa fa-spinner fa-spin'></i>")
+					},
+					success: function(response){
+						$("#multiple_pays").html("Recargando...");
+						window.location.reload();
+					},
+					error: function(error) {
+						alert(JSON.stringify(error))
+					}
+				})
+			}
+ 
+
+		</script>
 		<script>
 			
 			function set_modal_note(id) {

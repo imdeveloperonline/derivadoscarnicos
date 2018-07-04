@@ -42,10 +42,21 @@
 				
 					<!-- row -->
 					<div class="row">
-				
+						<div class="col-xs-12 col-sm-4 pull-right" style="margin-bottom: 10px;">
+							<form class="smart-form" action="javascript:pay_credits()">
+								<footer>
+									<button id="multiple_pays" class="btn btn-primary pull-right">Pagar crédito</button>
+									<div class="clearfix"></div>
+									<label class="checkbox pull-right">
+									<input name="all" id="all" type="checkbox">
+									<i></i>Seleccionar todo</label>
+								</footer>
+								
+							</form>
+						</div>
 						<!-- NEW WIDGET START -->
 						<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-				
+					
 							<!-- Widget ID (each widget will need unique ID)-->
 							<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-0" data-widget-editbutton="false" data-widget-deletebutton="false">
 								<header>
@@ -83,11 +94,13 @@
 											<tbody id="tbody">
 
 												<?php 
+													$ci = &get_instance();
+													$ci->load->model('Finanzas_model','finances');
+													$ci->load->helper('numbers');
 
 													foreach ($datos['adv_suppliers'] as $key => $value) {
 
-														$ci = &get_instance();
-														$ci->load->model('Finanzas_model','finances');
+														
 														$query = $ci->finances->get_credit_balance($value['id']);
 
 														$balance = $query->result_array()[0]['balance'];
@@ -101,13 +114,16 @@
 															<tr id="tr_<?= $value['id'] ?>">
 																<td><?= $value['id']; ?></td>
 																<td><?= $value['supplier_name']; ?></td>
-																<td><?= $value['amount']; ?></td>
+																<td><?= latin_format_number($value['amount']) ?></td>
 																<td><?= $value['product_name']; ?></td>
 																<td><?= $value['quantity']; ?></td>
 																<td><?= strftime('%A %d-%m-%Y',strtotime($value['date'])); ?></td>
 																<td><?= $value['method_name']; ?></td>
-																<td><?= $balance; ?></td>													
+																<td><?= latin_format_number($balance) ?></td>													
 																<td>
+																	&nbsp;
+																	<input type="checkbox" class="credit_check" data-advid="<?= $value['id'] ?>" name="">
+																	&nbsp;
 																	&nbsp;
 																	<a data-toggle="modal" href="#archive-modal" onclick="javascript:set_modal(<?= $value['id'] ?>)">
 																		<i class="fa fa-folder-open fa-lg" title="Archivar"></i>
@@ -159,7 +175,6 @@
 				
 				</section>
 				<!-- end widget grid -->
-
 
 				<!-- Modal -->
 				<div class="modal fade" id="myModal" tabindex="-1" role="dialog">
