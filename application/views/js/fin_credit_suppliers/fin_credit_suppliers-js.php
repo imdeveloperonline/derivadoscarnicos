@@ -60,8 +60,10 @@
 						$("#multiple_pays").html("<i class='fa fa-spinner fa-spin'></i>")
 					},
 					success: function(response){
-						$("#multiple_pays").html("Recargando...");
-						window.location.reload();
+						$("#multiple_pays").html("Pagar crédito");
+						$("#multiple_pays").parent().append("<button type='button' onclick='javascript:window.location.reload()' class='btn btn-danger pull-right'>Recargar para ver resultados</button>").hide().fadeIn("slow");
+						// window.location.reload();
+						$("#resultado").html(response)
 					},
 					error: function(error) {
 						alert(JSON.stringify(error))

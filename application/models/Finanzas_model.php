@@ -302,6 +302,17 @@ class Finanzas_model extends CI_Model {
 		}
 	}
 
+	public function get_total_by_supplier_in_these_advances($advances)
+	{
+		$this->db->where('method_id', 2);
+		$this->db->where('deleted !=', 1);
+		$this->db->where_in('advance_supplier.id', $advances);
+		$this->db->join('supplier','supplier.id = advance_supplier.supplier_id','inner');
+		$this->db->group_by('supplier_id');
+		$this->db->select('SUM(amount) AS total, supplier_id, tradename, name_method, rut_method, bankcenter_method, account_method', FALSE);
+		return $this->db->get('advance_supplier');
+	}
+
 }
 
 /* End of file Finanzas_model.php */

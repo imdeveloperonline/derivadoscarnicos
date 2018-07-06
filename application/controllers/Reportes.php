@@ -827,6 +827,27 @@ class Reportes extends CI_Controller {
 
 	}
 
+	public function export_report_auto()
+	{
+		$data['content'] = $_POST['html_data'];
+
+		$pdfFilePath = FCPATH . "assets/pdf/prueba1.pdf";
+
+		$html = $this->load->view('pdf_template', $data, true); // render the view into HTML
+		$html = mb_convert_encoding($html, 'UTF-8', 'UTF-8');
+
+		$this->load->library('pdf');
+
+		$pdf = $this->pdf->load();
+
+		// $pdf->SetFooter($_SERVER['HTTP_HOST'].'|{PAGENO}|'.date(DATE_RFC822)); // Add a footer for good measure ;)
+
+		$pdf->WriteHTML($html); // write the HTML into the PDF
+
+		$pdf->Output($pdfFilePath, 'D');
+
+	}
+
 	public function departamentos()
 	{
 		$this->load->model('Location_model', 'locations');
@@ -2583,6 +2604,68 @@ class Reportes extends CI_Controller {
 
 		}
 
+		$value = "";
+		$v = "";
+		$valor = "";
+		$y = "";
+
+		$query_credit = $this->reports->get_supplier_credit_balance();
+
+		$html_credit = "<h1>Deuda (Crédito) con Proveedores al ".date("d-m-Y")."</h1>";
+		foreach ($query_credit as $key => $value) {
+			$html_credit .= "<h2><small>Proveedor: (".$value['supplier_id'].")</small> ".strtoupper($value['tradename'])."</h2>";
+			$html_credit .= "<div style='margin-left: 30px'>";
+
+			foreach ($value['regional'] as $x => $y) {
+				$html_credit .= "<p><small>Regional:</small> <strong>".$y['name']."</strong></p>";
+			}
+
+			$html_credit .= "<p><small>Crédito:</small> <strong>".$value['balance']."</strong></p>";
+
+			if(!empty($value['advance'])){
+				$html_credit .= "<p><small>Valor de último anticipo:</small> <strong>".$value['advance'][0]['amount']."</strong></p>";
+			}
+			$html_credit .= "<br>";
+			$html_credit .= "<h3>Medio de Pago Principal</h3>";
+			$html_credit .= "<p>Nombre: ".$value['name']."</p>";
+			$html_credit .= "<p>Rut: ".$value['rut']."</p>";
+			$html_credit .= "<p>Banco: ".$value['bank']."</p>";
+			$html_credit .= "<p>Cuenta: ".$value['account']."</p>";
+
+			if(!empty($value['banks']) || !empty($value['centers']))
+			{
+				$html_credit .= "<h3>Otros Medios de Pago</h3>";
+				if(!empty($value['banks'])){
+					foreach ($value['banks'] as $k => $v) {
+						$html_credit .= "<h4>Bancos</h4>";
+						$html_credit .= "<div style='margin-left: 30px'>";
+						$html_credit .= "<p>Nombre: ".$v['name']."</p>";
+						$html_credit .= "<p>Rut: ".$v['rut']."</p>";
+						$html_credit .= "<p>Banco: ".$v['bank']."</p>";
+						$html_credit .= "<p>Cuenta: ".$v['account']."</p>";
+						$html_credit .= "<p>Tipo de Cuenta: ".$v['type_account']."</p>";
+						$html_credit .= "</div>";
+					}
+				}
+
+				if(!empty($value['centers'])){
+					foreach ($value['centers'] as $clave => $valor) {
+						$html_credit .= "<h4>Centros de Pago</h4>";
+						$html_credit .= "<div style='margin-left: 30px'>";
+						$html_credit .= "<p>Nombre: ".$valor['name']."</p>";
+						$html_credit .= "<p>Centro: ".$valor['center']."</p>";
+						$html_credit .= "<p>Lugar: ".$valor['location']."</p>";
+						$html_credit .= "<p>Rut: ".$valor['rut']."</p>";
+						$html_credit .= "</div>";
+					}
+				}
+			}
+
+			$html_credit .= "</div>";
+			$html_credit .= "<br><br>";
+
+		}
+
 		$this->load->library("email");
 
 		$configGmail = array(
@@ -2606,10 +2689,25 @@ class Reportes extends CI_Controller {
 		 $this->email->message($html);
 		 
 		 if($this->email->send()) {
-		 	echo "Email enviado";
+		 	echo "Email (1) enviado";
 		 } else {
 		 	echo "Error al enviar email";
 		 }
+
+		 $this->email->initialize($configGmail);
+		 
+		 $this->email->from('no-reply@derivadoscarnicos.com');
+		 $this->email->to("pagosderivadoscarnicos@gmail.com");
+		 $this->email->subject('Deuda (Crédito) con Proveedores');
+
+		 $this->email->message($html);
+		 
+		 if($this->email->send()) {
+		 	echo "Email (2) enviado";
+		 } else {
+		 	echo "Error al enviar email";
+		 }
+
 		$this->output->enable_profiler(TRUE);
 	}
 

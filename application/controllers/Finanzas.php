@@ -1073,6 +1073,8 @@ class Finanzas extends CI_Controller {
 
 		$this->load->model('Usuarios_model', 'users');
 
+		$query_total = $this->finances->get_total_by_supplier_in_these_advances($advances);
+
 		foreach ($advances as $advance_supplier_id) {
 			$query_balance = $this->finances->get_credit_balance($advance_supplier_id);
 			$balance = $query_balance->result_array()[0]['balance'];
@@ -1097,10 +1099,50 @@ class Finanzas extends CI_Controller {
 
 		}
 
-		echo 1;
+		$table = "<table style='border: 1px solid black; border-collapse: collapse;'>";
+		$table .= "";
+		$table .= "<tr>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>ID</th>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>Proveedor</th>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>Pago</th>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>Nombre</th>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>CC o Rut</th>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>Banco o Centro</th>";
+			$table .= "<th style='border: 1px solid black;padding: 5px;'>Cuenta</th>";
+		$table .= "</tr>";
+		$table .= "";
+		$table .= "<tbody>";
+		foreach ($query_total->result_array() as $key => $value) {
+			
+			$table .= "<tr>";
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['supplier_id']."</td>";
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['tradename']."</td>";
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['total']."</td>";
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['name_method']."</td>";
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['rut_method']."</td>";
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['bankcenter_method']."</td>";			
+			$table .= "<td style='border: 1px solid black;padding: 5px;'>".$value['account_method']."</td>";
+			$table .= "</tr>";
+		}
+		$table .= "</tbody>";
+		$table .= "</table>";
 
+		echo $table;
+		?>
+		<div style="padding-top: 10px; padding-bottom: 10px;">
+			<form id="report_form" action="<?= base_url() ?>reportes/export_report" method="post" target="_blank">
+				<input type="hidden" name="html_data" id="html_data" value="<?= $table ?>">
+				<button type="submit" class="btn btn-primary center-block">
+					Exportar PDF
+					<i class="fa fa-external-link"></i>
+				</button>
+			</form>			
+		</div>
 
+		<?php
 		
+
+
 	}
 
 }

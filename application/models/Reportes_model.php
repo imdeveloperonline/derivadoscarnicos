@@ -231,6 +231,7 @@ class Reportes_model extends CI_Model {
 
 	public function get_suppliers_balance()
 	{
+		$this->load->helper('numbers');
 		$suppliers = $this->db->query('SELECT supplier.id, tradename, name_method, rut_method, bankcenter_method, account_method, department_id FROM supplier INNER JOIN city ON city.id = supplier.city_id WHERE deleted != 1');
 
 		$result_array = [];
@@ -268,7 +269,7 @@ class Reportes_model extends CI_Model {
 					"tradename" => $value['tradename'],
 					"regional" => $regional->result_array(),
 					"advance" => $last_advance->result_array(),
-					"balance" => $balance,
+					"balance" => latin_format_number($balance),
 					"name" => $value['name_method'],
 					"rut" => $value['rut_method'],
 					"bank" => $value['bankcenter_method'],
@@ -279,6 +280,54 @@ class Reportes_model extends CI_Model {
 			}
 
 		}
+
+		return $result_array;
+	}
+
+	public function get_supplier_credit_balance()
+	{
+		$suppliers = $this->db->query('SELECT supplier.id, tradename, name_method, rut_method, bankcenter_method, account_method, department_id FROM supplier INNER JOIN city ON city.id = supplier.city_id WHERE deleted != 1');
+
+		$result_array = [];
+		$supplier_id = 0;
+
+		foreach ($suppliers->result_array() as $key => $value) {
+			$supplier_id = $value['id'];
+
+			$regional = $this->db->query('SELECT regional.name FROM regional INNER JOIN city ON city.id = regional.city_id WHERE department_id = ?',array($value['department_id']));
+			$banks = $this->db->query('SELECT bank, account, name, rut, type_account FROM supplier_bank WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
+			$centers = $this->db->query('SELECT center, location, name, rut FROM supplier_center WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
+
+
+			$credits = $this->db->query('SELECT IFNULL(SUM(amount),0) AS total FROM advance_supplier WHERE method_id = 2 AND supplier_id = ?',array($supplier_id));
+			$pays = $this->db->query('SELECT IFNULL(SUM(credit_payment.amount),0) AS total FROM credit_payment INNER JOIN advance_supplier ON advance_supplier.id = credit_payment.advance_supplier_id WHERE method_id = 2 AND supplier_id = ?',array($supplier_id));
+
+			$amount_advances = $credits->result_array()[0]['total'];
+			$amount_pays = $pays->result_array()[0]['total'];
+
+			$balance = $amount_advances - $amount_pays;
+
+			if($balance == "" || $balance == NULL) {
+				$balance = 0;
+			}
+
+			if($balance > 0) {
+				$result_array[] = array(
+					"supplier_id" => $supplier_id,
+					"tradename" => $value['tradename'],
+					"regional" => $regional->result_array(),
+					"balance" => latin_format_number($balance),
+					"name" => $value['name_method'],
+					"rut" => $value['rut_method'],
+					"bank" => $value['bankcenter_method'],
+					"account" => $value['account_method'],
+					"banks" => $banks->result_array(),
+					"centers" => $centers->result_array()
+				);
+			}
+
+
+		} 
 
 		return $result_array;
 	}
