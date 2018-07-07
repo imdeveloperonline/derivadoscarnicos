@@ -37,7 +37,7 @@ $(function(){
     }, "El formato valido es AAAA-MM-DD");
 
     $.validator.addMethod("img", function(value, element) {
-        return /^(C:\\fakepath\\)+[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+(\.jpg)|(\.jpeg)$/i.test(value);
+        return /^(C:\\fakepath\\)+[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+(\.jpg)|(\.jpeg)$|^$/i.test(value);
     }, "El formato de la imagen debe ser jpg");
 }); 
 

@@ -92,9 +92,7 @@
 													<th data-hide="phone,tablet">Tipo</th>
 													<th data-hide="phone,tablet">Regional</th>
 													<th data-hide="phone,tablet">Detalles</th>
-													<?php if($_SESSION['profile'] == 1) { ?>
 													<th data-hide="phone,tablet">Acciones</th>
-													<?php } ?>
 												</tr>
 											</thead>
 											<tbody id="tbody">
@@ -111,15 +109,23 @@
 																<td><?= $value['type_outgo']; ?></td>
 																<td><?= $value['regional_name']; ?></td>
 																<td><?= $value['detail']; ?></td>
-																<?php if($_SESSION['profile'] == 1) { ?>
+																
 																<td>
+																	<?php if($_SESSION['profile'] == 1) { ?>
 																	&nbsp;
 																	<a href="<?= base_url() ?>gastos/editar/<?= $value['id'] ?>" title="Editar Producto">
 																		<i class="fa fa-pencil fa-lg"></i>
 																	</a>
 																	&nbsp;
+																	<?php } ?>
+																	<?php if($value['file_name'] != "" && $value['file_name'] != NULL) { ?>
+																	&nbsp;
+																	<a href="#imgModal" data-toggle="modal" title="Ver imagen" onclick="fillImg('<?= $value['file_name'] ?>')">
+																		<i class="fa fa-file-photo-o fa-lg"></i>
+																	</a>
+																	&nbsp;
+																	<?php } ?>
 																</td>
-																<?php } ?>
 															</tr>
 														<?php
 
@@ -177,7 +183,7 @@
 											<section class="col col-6">
 												<label class="label"><strong>Monto (COP)</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-													<input type="text" name="amount" placeholder="Monto (COP)" required amounts="true">
+													<input type="text" name="amount" id="amount" placeholder="Monto (COP)" required amounts="true" onkeyup="this.value = numberFront('amount')">
 												</label>
 											</section>
 										</div>
@@ -186,7 +192,7 @@
 											<section class="col col-6">
 												<label class="label"><strong>Tipo de Gasto</strong></label>
 												<label class="input">
-													<select name="type_outgo_id" style="width: 100%" class="select2" required>
+													<select name="type_outgo_id" id="type_outgo_id" style="width: 100%" class="select2" required>
 														<optgroup>
 														<option value="" selected="" disabled="">Tipo de Gasto</option>
 
@@ -208,9 +214,27 @@
 										<section>
 											<label class="label"><strong>Detalles</strong></label>
 											<label class="textarea"> <i class="icon-prepend fa fa-comment"></i>						
-												<textarea rows="5" name="detail" placeholder="Detalles"></textarea> 
+												<textarea rows="5" name="detail" id="detail" placeholder="Detalles"></textarea> 
+											</label>
+										</section>
+										<section>
+											<label class="label"><strong>Título de la Imagen</strong></label>
+											<label class="input"> <i class="icon-prepend fa fa-user"></i>
+												<input type="text" name="title" id="title" placeholder="Título de la Imagen">
 											</label>
 										</section>	
+										<section>									
+											<div class="input input-file">
+												<span class="button"><input id="file" name="file" onchange="this.parentNode.nextSibling.value = this.value" type="file"><i class="fa fa-camera"></i></span><input placeholder="Toma una foto o selecciona un archivo" id="photo" readonly="" type="text" capture img="true">
+											</div>
+											<div class="note">
+												El formato de la imagen debe ser jpg
+											</div>												
+										</section>
+
+										<section>
+											<img src="" id="imgSalida" style="max-width: 100%;height: auto; max-height: 300px; display: block; margin-left: auto; margin-right: auto;">
+										</section>
 									</fieldset>
 									
 									<footer>
@@ -269,5 +293,24 @@
 				</div><!-- /.modal-deleted-content -->
 			</div><!-- /.modal-deleted-dialog -->
 		</div><!-- /.modal-deleted -->
+
+		<!-- Modal Img -->
+				<div class="modal fade" id="imgModal" tabindex="-1" role="dialog">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-body">
+								<button type="button" id="close" class="close" data-dismiss="modal" aria-hidden="true">
+									&times;
+								</button>
+								<div id="fullimg" style="text-align: center;"></div>
+
+														
+										
+
+							</div>
+
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal Img -->
 
 		

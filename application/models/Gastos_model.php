@@ -16,7 +16,7 @@ class Gastos_model extends CI_Model {
 
 	public function get_outgoes()
 	{
-		$query = $this->db->query('SELECT outgo.id,  date,  amount,  detail,  type_outgo_id, type_outgo.name AS type_outgo,  user_id,  regional_id, regional.name AS regional_name FROM outgo INNER JOIN type_outgo ON type_outgo.id = outgo.type_outgo_id INNER JOIN regional ON regional.id = outgo.regional_id WHERE regional_id = ?',array($_SESSION['regional']));
+		$query = $this->db->query('SELECT outgo.id,  date,  amount,  detail,  type_outgo_id, type_outgo.name AS type_outgo,  user_id,  outgo.regional_id, regional.name AS regional_name, file_name FROM outgo INNER JOIN type_outgo ON type_outgo.id = outgo.type_outgo_id INNER JOIN regional ON regional.id = outgo.regional_id LEFT JOIN outgo_img ON outgo_img.outgo_id = outgo.id WHERE outgo.regional_id = ?',array($_SESSION['regional']));
 		return $query;
 	}
 

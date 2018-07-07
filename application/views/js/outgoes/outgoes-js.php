@@ -4,7 +4,48 @@
 		<script src="<?= base_url() ?>assets/js/plugin/datatables/dataTables.tableTools.min.js"></script>
 		<script src="<?= base_url() ?>assets/js/plugin/datatables/dataTables.bootstrap.min.js"></script>
 		<script src="<?= base_url() ?>assets/js/plugin/datatable-responsive/datatables.responsive.min.js"></script>
+		
+		<script>
 
+			function fillImg(file_name) {
+
+				var url = "<?= base_url() ?>assets/supports/outgoes/"+file_name;
+
+				$("#fullimg").html('<i class="fa fa-spinner fa-spin fa-3x" style="display: block; margin-left: auto; margin-right: auto;"></i>');
+				setTimeout(function(){
+					$("#fullimg").html('<img src="'+url+'" style="max-width: 100%; max-height: 360px; display: block; margin-left: auto; margin-right: auto;">').hide().fadeIn(400);
+				},1500)
+			}
+
+		</script>
+
+
+
+		<script>
+			 $(function() {
+			  $('#file').change(function(e) {
+			      addImage(e); 
+			     });
+
+			     function addImage(e){
+			      var file = e.target.files[0],
+			      imageType = /image.*/;
+			    
+			      if (!file.type.match(imageType))
+			       return;
+			  
+			      var reader = new FileReader();
+			      reader.onload = fileOnload;
+			      reader.readAsDataURL(file);
+			     }
+			  
+			     function fileOnload(e) {
+			      var result=e.target.result;
+			      $('#imgSalida').attr("src",result);
+			     }
+			    });
+			
+		</script>
 		<script>
 			
 			function set_modal (id) {
@@ -181,34 +222,43 @@
 		<script>
       		
 	      function new_outgo() {
-
-	          var params = $("#new-outgo-form").serialize();
+	        var formData = new FormData();
+			formData.append('file', $('#file')[0].files[0]);
+			formData.append('date', $('#date').val());
+			formData.append('amount', stringToNumber($('#amount').val()));
+			formData.append('type_outgo_id', $('#type_outgo_id').val());
+			formData.append('detail', $('#detail').val());
+			formData.append('title', $('#title').val());
 	          
-	         $.ajax({
-	                data:  {data:params},
-	                url:   '<?= base_url(); ?>gastos/set_outgo',
-	                type:  'post',
-	                beforeSend: function () {
-	                        $("#buttonNewOutgo").html("<i class='fa fa-spinner fa-spin'></i>");
-	                },
-	                success:  function (response) {
-	                        $("#message").remove();
-	                        $(".dataTables_empty").parent().fadeOut('slow');
-	                        $(response).appendTo('#resultado');
-	                        $("#message").hide().fadeIn('slow');
-	                        $("#buttonNewOutgo").html("Registrar");
-	                        $("#close").click();
+	        $.ajax({
+                data:  formData,
+                url:   '<?= base_url(); ?>gastos/set_outgo',
+                type:  'post',
+		        processData: false,  
+		        contentType: false,
+                beforeSend: function () {
+                        $("#buttonNewOutgo").html("<i class='fa fa-spinner fa-spin'></i>");
+                },
+                success:  function (response) {
 
-	                },
-	                error:function(error){
-	                  $("#message").remove();
+                        $("#message").remove();
+                        $(".dataTables_empty").parent().fadeOut('slow');
+                        $(response).appendTo('#resultado');
+                        $("#message").hide().fadeIn('slow');
+                        $("#buttonNewOutgo").html("Registrar");
+                        $("#close").click();
 
-	                  $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>Ocurrió un error al comunicarse con el servidor.</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
+                },
+                error:function(error){
+                  $("#message").remove();
 
-	                  $("#buttonNewOutgo").html("Registrar");
-	                  $("#close").click();
-	                }
+                  $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>Ocurrió un error al comunicarse con el servidor.</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
+
+                  $("#buttonNewOutgo").html("Registrar");
+                  $("#close").click();
+                }
 	        });
+
 
 	      }
 

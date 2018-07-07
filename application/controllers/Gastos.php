@@ -54,8 +54,13 @@ class Gastos extends CI_Controller {
 
 	public function set_outgo()
 	{
+
 		$params = [];
-		parse_str($_POST['data'],$params);
+		$params['date'] = $_POST['date'];
+		$params['amount'] = $_POST['amount'];
+		$params['type_outgo_id'] = $_POST['type_outgo_id'];
+		$params['detail'] = $_POST['detail'];
+
 
 		$params['user_id'] = $this->session->userdata('id'); 
 		$params['regional_id'] = $this->session->userdata('regional'); 
@@ -76,27 +81,108 @@ class Gastos extends CI_Controller {
 
 			$this->users->set_user_operation($array);
 
-			?>
-				<div id="message" class="alert alert-block alert-success">
-					<a class="close" data-dismiss="alert" href="#">×</a>
-					<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
-					<p>
-						El gasto se ha registrado EXITOSAMENTE
-					</p>
-				</div>
-				<script>
-					setTimeout(function() {
-						$('#message').fadeOut('slow',function() { 
-							$('#message').remove(); 
-							document.getElementById('new-outgo-form').reset(); 
-							window.location.reload();
-						});
-					}, 5000);
-					fillTable();
-				</script>
-			<?php
+			if(isset($_FILES['file'])){
 
-		}else{
+				$name = date("YmdHis",time()) . "_rg" . $_SESSION['regional'] . "_usr" . $_SESSION['id'] . ".jpg";
+
+			 	$config['upload_path'] = "./assets/supports/outgoes";
+		        $config['file_name'] = $name;
+		        $config['file_ext_tolower'] = true;
+		        $config['allowed_types'] = "jpg";
+		        $config['max_size'] = "10000";
+		        $config['max_width'] = "5000";
+		        $config['max_height'] = "5000";
+
+		        $this->load->library('upload', $config);
+		        
+		        if (!$this->upload->do_upload('file')) {
+		        	?>
+						<div id="message" class="alert alert-block alert-warning">
+							<a class="close" data-dismiss="alert" href="#">×</a>
+							<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Alerta!</h4>
+							<p>
+								El gasto se ha registrado EXITOSAMENTE, pero la imagen no pudo ser procesada.
+							</p>
+						</div>
+						<script>
+							setTimeout(function() {
+								$('#message').fadeOut('slow',function() { 
+									$('#message').remove(); 
+								});
+							}, 5000);
+							fillTable();
+						</script>
+					<?php
+
+		        } else {
+	        		$file_info = $this->upload->data();
+	        		$thumb = $this->_create_thumbnail($file_info['file_name']);
+
+		            $params = array(
+		            	"title" => $_POST['title'],
+		            	"description" => $_POST['detail'],
+		            	"file_name" => $file_info['file_name'],
+		            	"regional_id" => $_SESSION['regional'],
+		            	"outgo_id" => $outgo_id
+		            );
+	            	$outgo_img_id = $this->outgoes->set_outgo_img($params);
+
+		            	if($this->db->affected_rows() > 0) {
+		            		$this->load->model('Usuarios_model', 'users');
+							$array = array(
+								"date" => date("Y-m-d H:i:s"),
+								"record_id" => $outgo_img_id,
+								"user_id" => $_SESSION['id'],
+								"operation_id" => 1,
+								"table" => "Soporte de Gasto"
+
+							);
+
+							$this->users->set_user_operation($array);
+						}
+		        	?>
+						<div id="message" class="alert alert-block alert-success">
+							<a class="close" data-dismiss="alert" href="#">×</a>
+							<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
+							<p>
+								El gasto se ha registrado EXITOSAMENTE
+							</p>
+						</div>
+						<script>
+							setTimeout(function() {
+								$('#message').fadeOut('slow',function() { 
+									$('#message').remove(); 
+								});
+							}, 5000);
+							fillTable();
+						</script>
+					<?php
+				
+		        }
+
+	    	} else {
+	    		?>
+					<div id="message" class="alert alert-block alert-success">
+						<a class="close" data-dismiss="alert" href="#">×</a>
+						<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
+						<p>
+							El gasto se ha registrado EXITOSAMENTE. <i>No se encontró imagen para procesar</i>
+						</p>
+					</div>
+					<script>
+						setTimeout(function() {
+							$('#message').fadeOut('slow',function() { 
+								$('#message').remove(); 
+							});
+						}, 5000);
+						fillTable();
+					</script>
+				<?php
+	    	}
+
+			
+
+		} else {
 			?>
 			<div class="alert alert-block alert-danger">
 				<a class="close" data-dismiss="alert" href="#">×</a>
@@ -578,7 +664,7 @@ class Gastos extends CI_Controller {
 
 	 	$config['upload_path'] = "./assets/supports/outgoes";
         $config['file_name'] = $name;
-        //$config['file_ext_tolower'] = true;
+        $config['file_ext_tolower'] = true;
         $config['allowed_types'] = "jpg";
         $config['max_size'] = "10000";
         $config['max_width'] = "5000";
