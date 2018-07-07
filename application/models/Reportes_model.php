@@ -332,6 +332,19 @@ class Reportes_model extends CI_Model {
 		return $result_array;
 	}
 
+	public function get_credit_balance_by_supplier($supplier_id)
+	{
+		$credits = $this->db->query('SELECT IFNULL(SUM(amount),0) AS total FROM advance_supplier WHERE method_id = 2 AND supplier_id = ?',array($supplier_id));
+		$pays = $this->db->query('SELECT IFNULL(SUM(credit_payment.amount),0) AS total FROM credit_payment INNER JOIN advance_supplier ON advance_supplier.id = credit_payment.advance_supplier_id WHERE method_id = 2 AND supplier_id = ?',array($supplier_id));
+
+		$amount_advances = $credits->result_array()[0]['total'];
+		$amount_pays = $pays->result_array()[0]['total'];
+
+		$balance = $amount_advances - $amount_pays;
+
+		return $balance;
+	}
+
 }
 
 /* End of file Reportes_model.php */

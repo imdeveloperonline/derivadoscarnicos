@@ -1315,7 +1315,8 @@ class Reportes extends CI_Controller {
 		$supplier_id = $_POST['data']['supplier_id'];
 
 		$query = $this->reports->get_supplier_report($supplier_id,$startdate,$finishdate);
-			
+		$query_credit = $this->reports->get_credit_balance_by_supplier($supplier_id);
+		$this->load->helper("numbers");
 		?>
 		<div style="padding-top: 10px; padding-bottom: 10px;">
 			<form id="report_form" action="<?= base_url() ?>reportes/export_report" method="post" target="_blank">
@@ -1401,9 +1402,9 @@ class Reportes extends CI_Controller {
 
 			 <div class="report_resume">
 
-				<h2 style="text-align: center;">Resumen</h2>
+				<h2 style="text-align: center; text-decoration: underline;">RECEPCIONES Y SALDOS (Resumen)</h2>
 				<hr>
-				<div>
+				<div style="display: flex; flex-wrap: wrap;">
 					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
 						<?php 
 						
@@ -1456,25 +1457,33 @@ class Reportes extends CI_Controller {
 						}
 
 						 ?>
-						<strong>Producto de Contado (<?= $cash_count ?>):</strong> 
+						<strong>Producto Recibido de Contado (<?= $cash_count ?>):</strong> 
 						<hr>
-						<div>Cantidad Producto: <?= $cash_quantity ?></div>
-						<div>Valor: <?= $cash_amount ?> COP</div>
+						<div style="font-size: 16px"><strong>Cantidad Producto:</strong> <?= $cash_quantity ?></div>
+						<div>Valor: <?= latin_format_number($cash_amount) ?> COP</div>
 					</div>
 					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
-						<strong>Producto a Crédito (<?= $credit_count ?>):</strong> 
+						<strong>Producto Recibido a Crédito (<?= $credit_count ?>):</strong> 
 						<hr>
-						<div>Cantidad Producto: <?= $credit_quantity ?></div>
-						<div>Valor: <?= $credit_amount ?> COP</div>
-						<div>Pago: <?= $credit_payment ?> COP</div>
-						<div>Deuda: <?= $credit_amount-$credit_payment ?> COP</div>
+						<div style="font-size: 16px"><strong>Cantidad Producto:</strong> <?= $credit_quantity ?></div>
+						<div>Valor: <?= latin_format_number($credit_amount) ?> COP</div>
+						
 					</div>
 					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
-						<strong>Producto en Anticipo (<?= $adv_count ?>):</strong> 
+						<strong>Producto Recibido en Anticipo (<?= $adv_count ?>):</strong> 
 						<hr>
-						<div>Cantidad Producto: <?= $adv_quantity ?></div>
-						<div>Valor: <?= $adv_amount ?> COP</div>
-						<div>Saldo actual: <?= $query['balance'] ?></div>
+						<div style="font-size: 16px"><strong>Cantidad Producto:</strong> <?= $adv_quantity ?></div>
+						<div>Valor: <?= latin_format_number($adv_amount) ?> COP</div>
+					</div>
+					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
+						<strong>SALDO ACTUAL EN ANTICIPOS:</strong> 
+						<hr>
+						<div style="font-size: 18px"><?= latin_format_number($query['balance']) ?> COP</div>
+					</div>
+					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
+						<strong>SALDO ACTUAL EN CRÉDITOS:</strong> 
+						<hr>
+						<div style="font-size: 18px"><?= latin_format_number($query_credit) ?> COP</div>
 					</div>
 
 				</div>
