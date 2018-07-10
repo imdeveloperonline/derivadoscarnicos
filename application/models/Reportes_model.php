@@ -241,7 +241,7 @@ class Reportes_model extends CI_Model {
 
 			$regional = $this->db->query('SELECT regional.name FROM regional INNER JOIN city ON city.id = regional.city_id WHERE department_id = ?',array($value['department_id']));
 
-			$last_advance = $this->db->query('SELECT amount FROM advance_supplier WHERE supplier_id = ? AND method_id = 3 ORDER BY id DESC LIMIT 1',array($supplier_id));
+			$last_advance = $this->db->query('SELECT amount, date FROM advance_supplier WHERE supplier_id = ? AND method_id = 3 ORDER BY id DESC LIMIT 1',array($supplier_id));
 
 			$banks = $this->db->query('SELECT bank, account, name, rut, type_account FROM supplier_bank WHERE supplier_id = ? AND deleted != 1',array($supplier_id));
 			$centers = $this->db->query('SELECT center, location, name, rut FROM supplier_center WHERE supplier_id = ? AND deleted != 1',array($supplier_id));

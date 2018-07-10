@@ -1081,6 +1081,7 @@ class Finanzas extends CI_Controller {
 			$insert = $this->finances->set_complete_credit_pay($advance_supplier_id, $balance);	
 
 			if($insert) {
+				$this->finances->set_paid_account_credit($advance_supplier_id);
 				$insert_id = $this->db->insert_id();
 
 				$array = array(

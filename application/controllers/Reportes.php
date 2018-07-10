@@ -2571,6 +2571,7 @@ class Reportes extends CI_Controller {
 
 			if(!empty($value['advance'])){
 				$html .= "<p><small>Valor de último anticipo:</small> <strong>".$value['advance'][0]['amount']."</strong></p>";
+				$html .= "<p><small>Fecha de último anticipo:</small> <strong>".strftime("%A %d-%m-%Y", strtotime($value['advance'][0]['date']))."</strong></p>";
 			}
 			$html .= "<br>";
 			$html .= "<h3>Medio de Pago Principal</h3>";
@@ -2716,7 +2717,6 @@ class Reportes extends CI_Controller {
 		 } else {
 		 	echo "Error al enviar email";
 		 }
-
 		$this->output->enable_profiler(TRUE);
 	}
 
