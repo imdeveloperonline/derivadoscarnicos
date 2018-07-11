@@ -392,14 +392,18 @@ class Bodega extends CI_Controller {
 	public function update_reception ()
 	{
 		$params = $_POST['data'];
-		$ini_method = $params['ini_method'];
-		unset($params['ini_method']);
+		/*$ini_method = $params['ini_method'];
+		unset($params['ini_method']);*/
+
 		$reception_id = $params['reception_id'];
 		unset($params['reception_id']);
-		$ini_adv = $params['ini_adv'];
+
+		/*$ini_adv = $params['ini_adv'];
 		unset($params['ini_adv']);
 		$ini_qua = $params['ini_qua'];
-		unset($params['ini_qua']);
+		unset($params['ini_qua']);*/
+
+		
 		$params['user_id'] = $_SESSION['id'];
 		$params['regional_id'] = $_SESSION['regional'];
 
@@ -460,36 +464,48 @@ class Bodega extends CI_Controller {
 		
 		/****** Brands Check Functions END *******/
 
+		if($params['method_id'] == 2){
+			$query = $this->finances->get_credit_balance($params['advance_supplier_id']);
+			$balance = $query->result_array()[0]['balance'];
 
-		if($params['method_id'] == $ini_method) {
+			if($balance == 0) {
+			?>
+			<div id="message" class="alert alert-block alert-danger">
+				<a class="close" data-dismiss="alert" href="#">×</a>
+				<h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error!</h4>
+				<p>
+					Este registro no puede ser editado. El saldo correspondiente al crédito ya ha sido pagado.
+				</p>
+			</div>
+
+			<?php
+			exit();
+			}
+
+		}
+
+		/*if($params['method_id'] == $ini_method) {*/
 
 			if($params['method_id'] == 3) {
+				$adv_balance_ini = $params['adv_balance_ini'];
+				unset($params['adv_balance_ini']);
 				// Rest verify
-				
-				$query = $this->finances->get_rest_advance($params['advance_supplier_id']);
-				$rest_advance = $query->result_array()[0]['total_reception_quantity'];
-				$quantity_advance = $query->result_array()[0]['quantity'];
-				if($rest_advance == NULL){
-					$rest_advance = 0;
-				}
-				$rest =  $quantity_advance - $rest_advance - $params['quantity'] + $ini_qua;
 
-				if ($rest < 0) {
+				$new_balance = $adv_balance_ini - ($params['quantity']*$params['unit_price']);
+				if ($new_balance < 0) {
 					?>
 					<div id="message" class="alert alert-block alert-danger">
 						<a class="close" data-dismiss="alert" href="#">×</a>
 						<h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error!</h4>
 						<p>
-							La CANTIDAD FALTANTE no puede ser menor que cero (0)
+							El saldo del proveedor no puede ser menor que cero (0)
 						</p>
 					</div>
 
 					<?php
 					exit();
 				}
-			} else {
-				$rest = 0;
-			}
+			} 
 			
 			$query = $this->storage->update_reception($reception_id,$params);
 			if ($query) {
@@ -506,41 +522,33 @@ class Bodega extends CI_Controller {
 				$this->users->set_user_operation($array);
 
 				if($params['method_id'] == 1 || $params['method_id'] == 2) {
-					$params['archived'] = 0;
-					$params['unit_price'] = (float) $params['amount'] / (float) $params['quantity'];
-					$params['detail'] = "(Nota de recepción) " . $params['note'];		
-					$note = $params['note'];		
-					unset($params['note']);
-					$brand = $params['brand'];
-					unset($params['brand']);
-					unset($params['deleted']);
 
-					$shamble_id = $params['shamble_id'];
-					$shamble_amount = $params['shamble_amount'];
-					unset($params['shamble_id']);
-					unset($params['shamble_amount']);
+					$advance_supplier_id = $params['advance_supplier_id'];
 
-					if($params['method_id'] == 1) {
-						$params['payed'] = 1;
-					} else {
-						$params['payed'] = 0;
-					}
+					$params_adv = array(
+						"date" => $params['date'],
+						"unit_price" => $params['unit_price'],
+						"amount" => $params['reception_amount'],
+						"quantity" => $params['quantity'],
+						"detail" => "(Nota de recepción) " . $params['note'],
+						"supplier_id" => $params['supplier_id'],
+						"product_id" => $params['product_id']
+					);
 
-					$update = $this->finances->update_adv_supplier($ini_adv,$params);
+					$update = $this->finances->update_adv_supplier($advance_supplier_id,$params_adv);
 					if($update){
-						$this->finances->set_advance_payed($ini_adv);
+						$this->finances->set_advance_payed($advance_supplier_id);
 					}
 				} else {
 					/******* Si se recibe todo el producto se marca para no volverlo a mostrar en el combo *******/
-					if($rest == 0){
+					/*if($rest == 0){
 						$this->finances->set_advance_payed($params['advance_supplier_id']);
 					}
-					
-					/******* Si faltan 10 o menos producto por recibir DE UN ANTICIPO se envía alerta al correo *******/
-					if($rest <= 10 && $params['method_id'] == 3 ) {
-						$reception_query = $this->storage->get_reception($reception_id);
-						$sendmail = $this->storage->send_low_rest_alert($reception_query->result_array(), $rest);
-						
+*/					
+					/******* Si el proveedor tiene 100.000 pesos o menos de saldo se envía alerta al correo *******/
+					if($new_balance <= 100000 && $params['method_id'] == 3 && base_url() != "http//localhost/codeigniter/" ) {
+						$reception_query = $this->storage->get_last_reception();
+						$this->storage->send_low_rest_alert($reception_query->result_array(), $new_balance);
 					}
 				}
 
@@ -594,8 +602,8 @@ class Bodega extends CI_Controller {
 				<?php
 			}
 			
-
-		} else {
+			exit();
+		/*} else {
 
 			$this->load->model('Finanzas_model', 'finances');
 
@@ -649,10 +657,10 @@ class Bodega extends CI_Controller {
 
 					);
 
-					$this->users->set_user_operation($array);
+					$this->users->set_user_operation($array);*/
 
 					/***** Insert Recepction Brands *****/
-					$this->storage->remove_brands($reception_id);
+		/*			$this->storage->remove_brands($reception_id);
 					if($params['brand'] != ""){					
 
 						for ($i=0; $i < $count ; $i++) { 
@@ -666,9 +674,9 @@ class Bodega extends CI_Controller {
 							}					
 							
 						}
-					}
+					}*/
 					/***** Insert Recepction Brands *****/
-					?>
+		/*			?>
 					<div id="message" class="alert alert-block alert-success">
 						<a class="close" data-dismiss="alert" href="#">×</a>
 						<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
@@ -699,16 +707,16 @@ class Bodega extends CI_Controller {
 					<?php
 				}
 
-			} 
+			} */
 
 	
 			/*** Si era Crédito o Débito y ahora es Anticipo ****/
-			if($params['method_id'] == 3 && ($ini_method == 1 || $ini_method == 2)){
+			// if($params['method_id'] == 3 && ($ini_method == 1 || $ini_method == 2)){
 
 
 				// Rest verify
 				
-				$query = $this->finances->get_rest_advance($params['advance_supplier_id']);
+		/*		$query = $this->finances->get_rest_advance($params['advance_supplier_id']);
 				$rest_advance = $query->result_array()[0]['total_reception_quantity'];
 				$quantity_advance = $query->result_array()[0]['quantity'];
 				if($rest_advance == NULL){
@@ -744,22 +752,22 @@ class Bodega extends CI_Controller {
 
 					);
 
-					$this->users->set_user_operation($array);
+					$this->users->set_user_operation($array);*/
 
 					/******* Si se recibe todo el producto se marca para no volverlo a mostrar en el combo *******/
-					if($rest == 0){
+			/*		if($rest == 0){
 						$this->finances->set_advance_payed($params['advance_supplier_id']);
-					}
+					}*/
 					
 					/******* Si faltan 10 o menos producto por recibir DE UN ANTICIPO se envía alerta al correo *******/
-					if($rest <= 10 && $params['method_id'] == 3 ) {
+			/*		if($rest <= 10 && $params['method_id'] == 3 ) {
 						$reception_query = $this->storage->get_reception($reception_id);
 						$sendmail = $this->storage->send_low_rest_alert($reception_query->result_array(), $rest);
 						
-					}
+					}*/
 
 					/***** Insert Recepction Brands *****/
-					$this->storage->remove_brands($reception_id);
+		/*			$this->storage->remove_brands($reception_id);
 					if($params['brand'] != ""){					
 
 						for ($i=0; $i < $count ; $i++) { 
@@ -773,9 +781,9 @@ class Bodega extends CI_Controller {
 							}					
 							
 						}
-					}
+					}*/
 					/***** Insert Recepction Brands *****/
-					?>
+		/*			?>
 					<div id="message" class="alert alert-block alert-success">
 						<a class="close" data-dismiss="alert" href="#">×</a>
 						<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
@@ -851,10 +859,10 @@ class Bodega extends CI_Controller {
 						$params['payed'] = 0;
 					}
 
-					$update = $this->finances->update_adv_supplier($ini_adv,$params);
+					$update = $this->finances->update_adv_supplier($ini_adv,$params);*/
 
 					/***** Insert Recepction Brands *****/
-					$this->storage->remove_brands($reception_id);
+		/*			$this->storage->remove_brands($reception_id);
 					if($params['brand'] != ""){					
 
 						for ($i=0; $i < $count ; $i++) { 
@@ -868,9 +876,9 @@ class Bodega extends CI_Controller {
 							}					
 							
 						}
-					}
+					}*/
 					/***** Insert Recepction Brands *****/
-					?>
+		/*			?>
 					<div id="message" class="alert alert-block alert-success">
 						<a class="close" data-dismiss="alert" href="#">×</a>
 						<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
@@ -904,7 +912,7 @@ class Bodega extends CI_Controller {
 			} 
 
 
-		}
+		}*/
 		
 	}
 

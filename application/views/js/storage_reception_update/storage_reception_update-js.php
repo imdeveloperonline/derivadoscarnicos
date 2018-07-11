@@ -66,7 +66,7 @@
           });
         });
 
-        $('input[name="quantity"]').change(function(){
+/*        $('input[name="quantity"]').change(function(){
           
           if(rest == null || rest == ""){
             rest = 0;
@@ -83,7 +83,7 @@
 
           $('input[name="rest"]').val(reception_rest.toFixed(2));
 
-        });
+        });*/
       });
     </script>
 
@@ -197,7 +197,7 @@
       }
     </script>
 
-    <script>
+   <!--  <script>
       $('select[name="method"]').change(function() {
 
         var method = $('select[name="method"]').val();
@@ -297,7 +297,7 @@
           $('.shamble').toggle(250);
         }
       });
-    </script>
+    </script> -->
 
     <script>
       function fillTable() {
@@ -319,10 +319,12 @@
     <script>
 
           
-        function update_reception() { 
+        function update_reception() {
+           
           var method = $('select[name="method"]').val();
-
-          var shamble_amount = $('input[name="shamble_amount"]').val();
+          var reception_amount = stringToNumber($("input[name='unit_price']").val()) * stringToNumber($("input[name='quantity']").val());
+         
+          var shamble_amount = stringToNumber($('input[name="shamble_amount"]').val());
           if(shamble_amount == "") {
             shamble_amount = 0;
           } 
@@ -332,57 +334,56 @@
               "reception_id" : $('input[name="reception_id"]').val(),
               "supplier_id" : $('select[name="supplier"]').val(),
               "method_id" : method,
-              "advance_supplier_id" : $('select[name="advance_supplier_id"]').val(),
-              "quantity" : $('input[name="quantity"]').val(),
+              "quantity" : stringToNumber($('input[name="quantity"]').val()),
               "date" : $('input[name="date"]').val(),
               "brand" : $('textarea[name="brand"]').val(),
               "note" : $('textarea[name="note"]').val(),
               "shamble_id" : $('select[name="shamble"]').val(),
               "shamble_amount" : shamble_amount,
-              "ini_method" : $('input[name="ini_method"]').val(),
-              "ini_adv" : $('input[name="ini_adv"]').val(),
-              "ini_qua" : $('input[name="ini_qua"]').val()
+              "unit_price" : stringToNumber($("input[name='unit_price']").val()),
+              "adv_balance_ini" : adv_balance_ini,
+              "reception_amount" : reception_amount,
+              "product_id" : $("select[name='product']").val()
             }
           } else {
             var params = {
               "reception_id" : $('input[name="reception_id"]').val(),
               "supplier_id" : $('select[name="supplier"]').val(),
               "method_id" : method,
-              "product_id" : $('select[name="product"]').val(),
-              "amount" : $('input[name="amount_credit"]').val(),
-              "quantity" : $('input[name="quantity_credit"]').val(),
+              "product_id" : $('select[name="product_credit"]').val(),
+              "reception_amount" : stringToNumber($('input[name="amount_credit"]').val()),
+              "unit_price" : stringToNumber($("input[name='unit_price']").val()),
+              "quantity" : stringToNumber($('input[name="quantity_credit"]').val()),
               "date" : $('input[name="date_credit"]').val(),
               "brand" : $('textarea[name="brand"]').val(),
               "note" : $('textarea[name="note"]').val(),
               "shamble_id" : $('select[name="shamble"]').val(),
               "shamble_amount" : shamble_amount,
-              "ini_method" : $('input[name="ini_method"]').val(),
-              "ini_adv" : $('input[name="ini_adv"]').val(),
-              "ini_qua" : $('input[name="ini_qua"]').val()
+              "advance_supplier_id" : $('input[name="advance_supplier_id"]').val()
             }
           }
           
-           $.ajax({
-                  data:  {data:params},
-                  url:   '<?= base_url(); ?>bodega/update_reception',
-                  type:  'post',
-                  beforeSend: function () {
-                          $("#button").html("<i class='fa fa-spinner fa-spin'></i>");
-                  },
-                  success:  function (response) {
-                          $("#message").remove();
-                          $(response).appendTo('#resultado');
-                          $("#message").hide().fadeIn('slow');
-                          $("#button").html("Guardar Cambios");
-                  },
-                  error:function(error){
-                    $("#message").remove();
+          $.ajax({
+              data:  {data:params},
+              url:   '<?= base_url(); ?>bodega/update_reception',
+              type:  'post',
+              beforeSend: function () {
+                      $("#button").html("<i class='fa fa-spinner fa-spin'></i>");
+              },
+              success:  function (response) {
+                      $("#message").remove();
+                      $(response).appendTo('#resultado');
+                      $("#message").hide().fadeIn('slow');
+                      $("#button").html("Guardar Cambios");
+              },
+              error:function(error){
+                $("#message").remove();
 
-                    $('<div id="message" class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>Ocurrió un error al comunicarse con el servidor.</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
+                $('<div id="message" class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>Ocurrió un error al comunicarse con el servidor.</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
 
-                    $("#button").html("Guardar Cambios");
-                    $("#close").click();
-                  }
+                $("#button").html("Guardar Cambios");
+                $("#close").click();
+              }
           });
 
 
@@ -391,44 +392,442 @@
 
       </script>
 
-      <script>
-      
-      function set_modal_delete (id) {
-        $('input[name="reception_delete"]').val(id);
-        
-      }
-    </script>
-
-      <script>
-      
-      function delete_reception() {        
-        
-            var params = {
-              "id" : $('input[name="reception_delete"]').val()
-            }
-
-            var n = $('input[name="reception_delete"]').val();
-
+     <script type="text/javascript">
+          $(function(){
             $.ajax({
-                  data:  params,
-                  url:   '<?= base_url(); ?>bodega/delete_reception',
-                  type:  'post',
-                  success:  function (response) {
-                          $("#message").remove();
-                          $(response).appendTo('#resultado');
-                          $("#message").hide().fadeIn('slow');
-                          $("#close-delete").click();
-                          $("#tr_"+n).fadeOut('slow');
-                          $("#tr_"+n+"+ tr.row-detail").fadeOut('slow');
-                  },
-                  error:function(error){
-                    $("#message").remove();
+                url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+                type: 'post',
+                data: {supplier_id: supplier_id_ini},
+                success : function(response) {
+                  $('input[name="unit_price"]').val(numberToString(response));
+                },
+                error : function (error) {
+                  alert(JSON.stringify(error));
+                }
+              });
 
-                    $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>Ocurrió un error al comunicarse con el servidor.</p></div>').appendTo('#resultado').hide().fadeIn('slow');
-
-                    $("#close-delete").click();
+              $.ajax({
+                url: '<?= base_url() ?>finanzas/get_supplier_balance',
+                type: 'post',
+                data: {supplier_id: supplier_id_ini},
+                success : function(response) {
+                  var unit_price = stringToNumber($('input[name="unit_price"]').val());
+                  if(method_id == 3){
+                    quantity_ini = stringToNumber($('input[name="quantity"]').val());
+                    adv_balance_ini = parseFloat(response) + parseFloat((unit_price*quantity_ini));
+                  } else {
+                    quantity_ini = stringToNumber($('input[name="quantity_credit"]').val());
+                    adv_balance_ini = parseFloat(response);
                   }
+                  
+                  $("input[name='adv_balance']").val(numberToString(response));
+                  
+                },
+                error : function (error) {
+                  alert(JSON.stringify(error));
+                }
+              });
+
+          })
+     </script>
+
+
+  <!--=========================================
+  =            Start New Functions            =
+  ==========================================-->
+  
+  <script type="text/javascript">
+       
+      $('select[name="method"]').change(function() {
+
+        $("#message-form").fadeOut(250).remove();
+
+        var method = $('select[name="method"]').val();
+
+        if(method == 3) {
+          
+          var supplier = $('select[name="supplier"]').valid();
+          
+          if(supplier != false) {
+
+            var supplier_id = $('select[name="supplier"]').val();
+            
+            $.ajax({
+              url: '<?= base_url() ?>finanzas/get_supplier_balance',
+              type: 'post',
+              data: {supplier_id: supplier_id},
+              success : function(response) {
+                adv_balance = response;
+                $("input[name='adv_balance']").val(numberToString(response));
+              },
+              error : function (error) {
+                alert(JSON.stringify(error));
+              }
             });
 
+            $.ajax({
+              url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+              type: 'post',
+              data: {supplier_id: supplier_id},
+              success : function(response) {
+                $('input[name="unit_price"]').val(numberToString(response));
+                $("select[name='product']").select2();
+                $("select[name='product']").val(1);
+                $("select[name='product']").find('option[value="1"]').prop('selected', true).change();
+                $("select[name='product_advance']").select2();
+                $("select[name='product_advance']").val(1);
+                $("select[name='product_advance']").find('option[value="1"]').prop('selected', true).change();
+              },
+              error : function (error) {
+                alert(JSON.stringify(error));
+              }
+            });
+            
+            if($('.advance').css("display") == "none") {
+              $('select[name="advance_supplier_id"]').prop("disabled",false);
+              $('input[name="quantity"]').prop("disabled",false);
+              $('input[name="adv_balance"]').prop("disabled",false);
+              $('input[name="date"]').prop("disabled",false);
+              $('.advance').toggle(250);
+            }
+
+          } 
+
+          if($('.unit_price').css("display") == "none") {
+            $('.unit_price').toggle(250);
           }
-    </script>
+
+          if($('.credit').css("display") != "none") {
+            $('select[name="product"]').prop("disabled",true);
+            $('input[name="quantity_credit"]').prop("disabled",true);
+            $('input[name="amount_credit"]').prop("disabled",true);
+            $('input[name="date_credit"]').prop("disabled",true);
+            $('.credit').toggle(250);
+          }
+        } 
+        else {
+
+          var supplier = $('select[name="supplier"]').valid();
+          
+          if(supplier != false) {
+
+            var supplier_id = $('select[name="supplier"]').val();
+
+            if(method == 2) {
+            
+              $.ajax({
+                url: '<?= base_url() ?>finanzas/get_supplier_balance',
+                type: 'post',
+                data: {supplier_id: supplier_id},
+                success : function(response) {
+                  $("#message-form").remove();
+                  if(response > 0) {
+                     $('<div id="message-form" class="alert alert-block alert-warning"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>Este proveedor tiene saldo de '+response+' COP en anticipos.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
+                  } 
+                },
+                error : function (error) {
+                  alert(JSON.stringify(error));
+                }
+              });
+            }
+            
+            $.ajax({
+              url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+              type: 'post',
+              data: {supplier_id: supplier_id},
+              success : function(response) {
+                $('input[name="unit_price"]').val(numberToString(response));
+                $("select[name='product']").select2();
+                $("select[name='product']").val(1);
+                $("select[name='product']").find('option[value="1"]').prop('selected', true).change();
+                $("select[name='product_advance']").select2();
+                $("select[name='product_advance']").val(1);
+                $("select[name='product_advance']").find('option[value="1"]').prop('selected', true).change();
+              },
+              error : function (error) {
+                alert(JSON.stringify(error));
+              }
+            });
+
+            if($('.unit_price').css("display") == "none") {
+              $('.unit_price').toggle(250);
+            }
+            
+            if($('.advance').css("display") != "none") {
+              $('select[name="advance_supplier_id"]').prop("disabled",true);
+              $('input[name="quantity"]').prop("disabled",true);
+              $('input[name="adv_balance"]').prop("disabled",true);
+              $('input[name="date"]').prop("disabled",true);
+              $('.advance').toggle(250);
+            }
+
+            if($('.credit').css("display") == "none") {
+              $('select[name="product"]').prop("disabled",false);
+              $('input[name="quantity_credit"]').prop("disabled",false);
+              $('input[name="amount_credit"]').prop("disabled",false);
+              $('input[name="date_credit"]').prop("disabled",false);
+              $('.credit').toggle(250);
+            }
+
+          } 
+
+          
+        }
+
+
+
+      });
+
+
+
+
+      $('select[name="supplier"]').change(function(){
+
+        var supplier_id = $('select[name="supplier"]').val();
+
+        if($('select[name="method"]').val() == 3) {
+            
+          $.ajax({
+            url: '<?= base_url() ?>finanzas/get_supplier_balance',
+            type: 'post',
+            data: {supplier_id: supplier_id},
+            success : function(response) {
+              adv_balance = response;
+              $("input[name='adv_balance']").val(numberToString(response));
+            },
+            error : function (error) {
+              alert(JSON.stringify(error));
+            }
+          });
+
+          $.ajax({
+            url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+            type: 'post',
+            data: {supplier_id: supplier_id},
+            success : function(response) {
+              $('input[name="unit_price"]').val(numberToString(response));
+              $("select[name='product']").select2();
+              $("select[name='product']").val(1);
+              $("select[name='product']").find('option[value="1"]').prop('selected', true).change();
+              $("select[name='product_advance']").select2();
+              $("select[name='product_advance']").val(1);
+              $("select[name='product_advance']").find('option[value="1"]').prop('selected', true).change();
+            },
+            error : function (error) {
+              alert(JSON.stringify(error));
+            }
+          });
+          
+          if($('.advance').css("display") == "none") {
+            $('select[name="advance_supplier_id"]').prop("disabled",false);
+            $('input[name="quantity"]').prop("disabled",false);
+            $('input[name="adv_balance"]').prop("disabled",false);
+            $('input[name="date"]').prop("disabled",false);
+            $('.advance').toggle(250);
+          }
+        }
+            
+        $.ajax({
+          url: '<?= base_url() ?>proveedores/get_supplier_shambles_by_regional',
+          type: 'post',
+          data: {supplier_id: supplier_id},
+          success : function(response) {
+            
+            $('select[name="shamble"]').html(response);
+          },
+          error : function (error) {
+            alert(JSON.stringify(error));
+          }
+        });
+        if($('.shamble').css("display") == "none") {
+          $('.shamble').toggle(250);
+        }
+
+
+        /*
+        Funciones relacionadas al método seleccionado
+         */
+        
+        var method = $('select[name="method"]').val();
+        if(method != null && method != "") {
+          
+          $("select[name='supplier']").valid();
+          if(method == 3) {   
+            $("#message-form").fadeOut(250).remove();     
+
+            var supplier_id = $('select[name="supplier"]').val();
+            
+            $.ajax({
+              url: '<?= base_url() ?>finanzas/get_adv_by_supplier',
+              type: 'post',
+              data: {supplier_id: supplier_id},
+              success : function(response) {
+                $('select[name="advance_supplier_id"]').html(response);
+              },
+              error : function (error) {
+                alert(JSON.stringify(error));
+              }
+            });
+            
+            if($('.advance').css("display") == "none") {
+              $('select[name="advance_supplier_id"]').prop("disabled",false);
+              $('input[name="quantity"]').prop("disabled",false);
+              $('input[name="adv_balance"]').prop("disabled",false);
+              $('input[name="date"]').prop("disabled",false);
+              $('.advance').toggle(250);
+            }           
+
+            if($('.credit').css("display") != "none") {
+              $('select[name="product"]').prop("disabled",true);
+              $('input[name="quantity_credit"]').prop("disabled",true);
+              $('input[name="amount_credit"]').prop("disabled",true);
+              $('input[name="date_credit"]').prop("disabled",true);
+              $('.credit').toggle(250);
+            }
+          } 
+          else {
+            
+
+            var supplier_id = $('select[name="supplier"]').val();
+
+            if(method == 2) {
+            
+              $.ajax({
+                url: '<?= base_url() ?>finanzas/get_supplier_balance',
+                type: 'post',
+                data: {supplier_id: supplier_id},
+                success : function(response) {
+                  $("#message-form").remove();
+                  if(response > 0) {
+                     $('<div id="message-form" class="alert alert-block alert-warning"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>Este proveedor tiene saldo de '+numberToString(response)+' COP en anticipos.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
+                  } 
+                },
+                error : function (error) {
+                  alert(JSON.stringify(error));
+                }
+              });
+            }
+            
+            $.ajax({
+              url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+              type: 'post',
+              data: {supplier_id: supplier_id},
+              success : function(response) {
+                $('input[name="unit_price"]').val(numberToString(response));
+                $("select[name='product']").select2();
+                $("select[name='product']").val(1);
+                $("select[name='product']").find('option[value="1"]').prop('selected', true).change();
+                $("select[name='product_advance']").select2();
+                $("select[name='product_advance']").val(1);
+                $("select[name='product_advance']").find('option[value="1"]').prop('selected', true).change();
+              },
+              error : function (error) {
+                alert(JSON.stringify(error));
+              }
+            });
+
+            if($('.unit_price').css("display") == "none") {
+              $('.unit_price').toggle(250);
+            }
+            
+            if($('.advance').css("display") != "none") {
+              $('select[name="advance_supplier_id"]').prop("disabled",true);
+              $('input[name="quantity"]').prop("disabled",true);
+              $('input[name="adv_balance"]').prop("disabled",true);
+              $('input[name="date"]').prop("disabled",true);
+              $('.advance').toggle(250);
+            }
+
+            if($('.credit').css("display") == "none") {
+              $('select[name="product"]').prop("disabled",false);
+              $('input[name="quantity_credit"]').prop("disabled",false);
+              $('input[name="amount_credit"]').prop("disabled",false);
+              $('input[name="date_credit"]').prop("disabled",false);
+              $('.credit').toggle(250);
+            }
+
+          } 
+        }
+      });
+
+     $('input[name="quantity_credit"]').change(function(){
+            var quantity_credit = stringToNumber($('input[name="quantity_credit"]').val());
+            var unit_price = stringToNumber($('input[name="unit_price"]').val());
+
+            var amount_credit = quantity_credit*unit_price;
+             $("input[name='amount_credit']").val(numberToString(amount_credit));
+     });
+
+    $('input[name="quantity"]').change(function(){
+      
+          
+          if(typeof adv_balance_ini != "undefined") {
+
+            var quantity = stringToNumber($('input[name="quantity"]').val());
+            var unit_price = stringToNumber($('input[name="unit_price"]').val());
+            var new_balance = adv_balance_ini - (quantity*unit_price);
+
+            if(new_balance < 0) {
+              $('input[name="adv_balance"]').css("color","red");
+            } else {
+              $('input[name="adv_balance"]').removeAttr("style");
+            }
+
+            if(new_balance == 100000 || new_balance < 100000) {
+              $('<div id="message-form" class="alert alert-block alert-info"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>El saldo del proveedor es igual o menos a 100.000 COP. Debe ser informado al administrador.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
+            } else {
+              $("#message-form").fadeOut(250).remove();
+            }
+
+
+            $('input[name="adv_balance"]').val(numberToString(new_balance.toFixed(2)));
+          } else {
+            var valid = $('select[name="supplier"]').valid();
+
+            if(valid != false) {
+
+              var supplier_id = $('select[name="supplier"]').val();
+
+              $.ajax({
+                url: '<?= base_url() ?>finanzas/get_supplier_balance',
+                type: 'post',
+                data: {supplier_id: supplier_id},
+                success : function(response) {
+                  var unit_price = stringToNumber($('input[name="unit_price"]').val());
+                  if(method_id == 3){
+                    quantity_ini = stringToNumber($('input[name="quantity"]').val());
+                    adv_balance_ini = parseFloat(response) + parseFloat((unit_price*quantity_ini));
+                  } 
+                  
+                  $("input[name='adv_balance']").val(numberToString(response));
+                  
+                },
+                error : function (error) {
+                  alert(JSON.stringify(error));
+                }
+              });
+
+              $.ajax({
+                url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
+                type: 'post',
+                data: {supplier_id: supplier_id},
+                success : function(response) {
+                  $('input[name="unit_price"]').val(numberToString(response));
+                },
+                error : function (error) {
+                  alert(JSON.stringify(error));
+                }
+              });
+            } 
+          }
+          
+
+        
+      });
+
+  </script>
+  
+  <!--====  End of Section comment  ====-->
+  
+  
+     

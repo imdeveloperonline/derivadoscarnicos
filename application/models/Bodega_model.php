@@ -27,8 +27,8 @@ class Bodega_model extends CI_Model {
 	}
 
 	public function get_reception($reception_id)
-	{
-		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, advance_supplier_id, advance_supplier.product_id, advance_supplier.quantity AS advance_quantity, note, unit_price, amount, detail, product_id, product.name AS product_name, advance_supplier.supplier_id, supplier.tradename AS supplier_name, reception.brand, reception.method_id, method.name AS method_name, shamble_id, shamble_amount, city.name AS city_name, department.name AS department_name, name_method, rut_method, bankcenter_method, account_method FROM reception INNER JOIN advance_supplier ON advance_supplier.id = reception.advance_supplier_id INNER JOIN product ON advance_supplier.product_id = product.id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN method ON method.id = reception.method_id INNER JOIN regional ON regional.id = reception.regional_id INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id WHERE advance_supplier.archived = 0 AND reception.deleted != 1 AND reception.id = ?',array($reception_id));
+	{ 
+		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, advance_supplier_id, supplier_id, unit_price, note,reception.product_id, reception_amount, product.name AS product_name, supplier.tradename AS supplier_name, reception.brand, reception.method_id, method.name AS method_name, shamble_id, shamble_amount, city.name AS city_name, department.name AS department_name, name_method, rut_method, bankcenter_method, account_method FROM reception LEFT JOIN product ON reception.product_id = product.id INNER JOIN supplier ON supplier.id = reception.supplier_id INNER JOIN method ON method.id = reception.method_id INNER JOIN regional ON regional.id = reception.regional_id INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id WHERE reception.deleted != 1 AND reception.id = ?',array($reception_id));
 		return $query;
 	}
 

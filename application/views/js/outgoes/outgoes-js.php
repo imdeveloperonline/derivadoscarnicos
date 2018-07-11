@@ -44,6 +44,29 @@
 			      $('#imgSalida').attr("src",result);
 			     }
 			    });
+
+			 $(function() {
+			  $('#file_add_img').change(function(e) {
+			      addImage(e); 
+			     });
+
+			     function addImage(e){
+			      var file = e.target.files[0],
+			      imageType = /image.*/;
+			    
+			      if (!file.type.match(imageType))
+			       return;
+			  
+			      var reader = new FileReader();
+			      reader.onload = fileOnload;
+			      reader.readAsDataURL(file);
+			     }
+			  
+			     function fileOnload(e) {
+			      var result=e.target.result;
+			      $('#imgSalida_add_img').attr("src",result);
+			     }
+			    });
 			
 		</script>
 		<script>
@@ -262,5 +285,37 @@
 
 	      }
 
+	      function set_add_img(outgo_id) {
+	      		$("input[name='add_img_id']").val(outgo_id);
+	      }
 
+	      function add_img() {
+	      		var formData = new FormData();
+				formData.append('file', $('#file_add_img')[0].files[0])
+				formData.append('title', $('#title_add_img').val());
+				formData.append('outgo_id', $("input[name='add_img_id']").val());
+
+				$.ajax({
+	                data:  formData,
+	                url:   '<?= base_url(); ?>gastos/add_img',
+	                type:  'post',
+			        processData: false,  
+			        contentType: false,
+	                success:  function (response) {
+
+                        $("#message").remove();
+                        $(response).appendTo('#resultado');
+                        $("#close-add-img").click();
+
+	                },
+	                error:function(error){
+	                  $("#message").remove();
+
+	                  $('<div class="alert alert-block alert-danger"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error: 500!</h4><p>Ocurrió un error al comunicarse con el servidor.</p>'+JSON.stringify(error)+'</div>').appendTo('#resultado').hide().fadeIn('slow');
+
+	                  $("#close-add-img").click();
+	                }
+		        });
+
+	      }
 	    </script>

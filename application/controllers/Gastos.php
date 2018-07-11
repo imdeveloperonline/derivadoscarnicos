@@ -780,6 +780,128 @@ class Gastos extends CI_Controller {
         return $this->image_lib->resize();
     }
 
+    public function add_img()
+    {
+    	if(!isset($_POST['outgo_id']) || $_POST['outgo_id'] == ""){
+    		?>
+			<div id="message" class="alert alert-block alert-danger">
+				<a class="close" data-dismiss="alert" href="#">×</a>
+				<h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error!</h4>
+				<p>
+					Ha ocurrido un error en el sistema la seleccionar el registro.
+				</p>
+			</div>
+
+    		<?php
+    		exit();
+    	}
+
+    	$name = date("YmdHis",time()) . "_rg" . $_SESSION['regional'] . "_usr" . $_SESSION['id'] . ".jpg";
+
+	 	$config['upload_path'] = "./assets/supports/outgoes";
+        $config['file_name'] = $name;
+        $config['file_ext_tolower'] = true;
+        $config['allowed_types'] = "jpg";
+        $config['max_size'] = "10000";
+        $config['max_width'] = "5000";
+        $config['max_height'] = "5000";
+
+        $this->load->library('upload', $config);
+        
+        if (!$this->upload->do_upload('file')) {
+            //*** ocurrio un error
+            /*$data['uploadError'] = $this->upload->display_errors();
+            echo "error: " . $this->upload->display_errors();
+            return;*/
+            ?>
+			<div id="message" class="alert alert-block alert-danger">
+				<a class="close" data-dismiss="alert" href="#">×</a>
+				<h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error!</h4>
+				<p>
+					Ha ocurrido un error al subir la imagen. La página se recargará para intentar corregirlo.
+				</p>
+			</div>
+			<script>
+				setTimeout(function(){
+					window.location.reload();
+				},5000);
+			</script>
+
+			<?php
+
+        } else {
+
+        	$file_info = $this->upload->data();
+            $thumb = $this->_create_thumbnail($file_info['file_name']);
+
+            if($thumb){
+
+	            $params = array(
+	            	"title" => $_POST['title'],
+	            	"file_name" => $file_info['file_name'],
+	            	"regional_id" => $_SESSION['regional'],
+	            	"outgo_id" => $_POST['outgo_id']
+	            );
+            	$outgo_img_id = $this->outgoes->set_outgo_img($params);
+
+            	if($this->db->affected_rows() > 0) {
+            		$this->load->model('Usuarios_model', 'users');
+					$array = array(
+						"date" => date("Y-m-d H:i:s"),
+						"record_id" => $outgo_img_id,
+						"user_id" => $_SESSION['id'],
+						"operation_id" => 1,
+						"table" => "Soporte de Gasto"
+
+					);
+
+					$this->users->set_user_operation($array);
+
+					?>
+						<div id="message" class="alert alert-block alert-success">
+							<a class="close" data-dismiss="alert" href="#">×</a>
+							<h4 class="alert-heading"><i class="fa fa-check-square-o"></i> ¡Exito!</h4>
+							<p>
+								La imagen ha sido guardada EXITOSAMENTE. La página se recargará para mostrar el registro.
+							</p>
+						</div>
+						<script>
+							setTimeout(function() {
+								$('#message').fadeOut('slow',function() { 
+									$('#message').remove(); 
+									document.getElementById('add-img-form').reset();
+									window.location.reload(); 
+								});
+							}, 5000);
+						</script>
+					<?php
+
+				}else{
+					?>
+					<div id="message" class="alert alert-block alert-danger">
+						<a class="close" data-dismiss="alert" href="#">×</a>
+						<h4 class="alert-heading"><i class="fa fa-times-circle"></i> ¡Error!</h4>
+						<p>
+							Ha ocurrido un error al registrar el producto. La página se recargará para intentar corregirlo.
+						</p>
+					</div>
+					<script>
+						setTimeout(function(){
+							window.location.reload();
+						},5000);
+					</script>
+
+					<?php
+
+
+				} 
+
+            }
+            
+            
+        }
+    }
+
 }
 
 /* End of file Gastos.php */

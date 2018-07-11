@@ -51,12 +51,12 @@
 
 	<div class="row">
 
-		<?php foreach ($datos['reception'] as $key => $value) { 
+		<?php foreach ($datos['reception'] as $clave => $valor) { 
 
 			?>
 
 
-
+ 
 		<!-- NEW COL START -->
 		<article class="col-sm-12 col-md-12 col-lg-8 col-lg-offset-2">
 			
@@ -72,32 +72,36 @@
 						
 					</div>
 					<!-- end widget edit box -->
-					
+					<?php $ci = &get_instance();
+					$ci->load->helper('numbers');
+					 ?>
+					<script type="text/javascript">
+						var supplier_id_ini = <?= $valor['supplier_id'] ?>;
+						var method_id = <?= $valor['method_id'] ?>;
+					</script>
 					<!-- widget content -->
 					<div class="widget-body no-padding">
 
 						<form id="reception-form" class="smart-form" action="javascript:update_reception()">
-							<input type="hidden" name="reception_id" value="<?= $value['id'] ?>">
-							<input type="hidden" name="ini_method" value="<?= $value['method_id'] ?>">
-							<input type="hidden" name="ini_adv" value="<?= $value['advance_supplier_id'] ?>">
-							<input type="hidden" name="ini_qua" value="<?= $value['reception_quantity'] ?>">
+							<input type="hidden" name="reception_id" value="<?= $valor['id'] ?>">
+							<div id="form-alert"></div>
 							<fieldset>
 								<div class="row">
 									<div class="col col-6">
 										<label class="label"><strong>Proveedor</strong></label>
 										<label class="input">
-											<select name="supplier" style="width:100%;" class="select2" id="supplier" required="required" data-placeholder="Seleccione un proveedor">
+											<select name="supplier" style="width:100%;" class="select2" id="supplier" required="required" data-placeholder="Seleccione un proveedor" disabled="disabled">
 												<option></option>		
 												<optgroup>
 													<?php 
-														foreach ($datos['suppliers'] as $k => $v) {
-															if($value['supplier_id'] == $v['id']){
+														foreach ($datos['suppliers'] as $key => $value) {
+															if($value['id'] == $valor['supplier_id']){
 															?>
-																<option value="<?= $v['id']; ?>" selected="selected"><?= $v['supplier_name']; ?></option>
+																<option value="<?= $value['id']; ?>" selected="selected"><?= $value['supplier_name']; ?></option>
 															<?php
 															} else {
 															?>
-																<option value="<?= $v['id']; ?>"><?= $v['supplier_name']; ?></option>
+																<option value="<?= $value['id']; ?>"><?= $value['supplier_name']; ?></option>
 															<?php
 															}
 														}
@@ -112,22 +116,22 @@
 									<section class="col col-6">
 										<label class="label"><strong>Método de pago</strong></label>
 										<label class="select">
-											<select name="method" required>
+											<select name="method" required disabled="">
 												<option value="" selected="" disabled="">Método de pago</option>
 
 												<?php 
 
 
-													foreach ($datos['methods'] as $k => $v) {
-														if($value['method_id'] == $v['id']){
-														?>
-															<option value="<?= $v['id']; ?>" selected="selected"><?= $v['name']; ?></option>
-														<?php
-														} else {
-														?>
-															<option value="<?= $v['id']; ?>"><?= $v['name']; ?></option>
-														<?php
-														}
+													foreach ($datos['methods'] as $key => $value) {
+														if($value['id'] == $valor['method_id']){
+															?>
+																<option value="<?= $value['id']; ?>" selected="selected"><?= $value['name']; ?></option>
+															<?php
+															} else {
+															?>
+																<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
+															<?php
+															}
 													}
 
 
@@ -136,81 +140,115 @@
 									</section>
 									
 								</div>
-								<?php if($value['method_id'] == 3) { 
 
-										$ci = &get_instance();
-										$ci->load->model('Finanzas_model','finances');
-										$query_adv_by_supplier = $ci->finances->get_adv_by_supplier($value['supplier_id']);
+								<?php 
+								if($valor['method_id'] != 3) {
+									$dnone_adv = 'style="display:none"';
+									$disabled_adv = 'disabled="disabled"';
+								} else {
+									$dnone_adv = '';
+									$disabled_adv = '';
+								}
+								?>
 
-										$query_rest = $ci->finances->get_rest_advance($value['advance_supplier_id']);
-
-									?>
-								<div class="row advance">
+								<div class="row unit_price">
 									<section class="col col-6">
-										<label class="label"><strong>Anticipo Correspondiente</strong></label>
-										<label class="input" disabled>
-											<select name="advance_supplier_id" style="width: 100%" class="select2" required data-placeholder="Seleccione un anticipo">
-											<optgroup>
-												
-												<?php 
-												foreach ($query_adv_by_supplier->result_array() as $k => $v) {
-													if($v['id'] == $value['advance_supplier_id']) {
-														?>
-														<option value="<?= $v['id'] ?>" selected="selected"><?= date("d-m-Y",strtotime($v['date']))." | ". $v['quantity'] ." | ".$v['product_name']; ?></option>
-														<?php
-													} else {
-														?>
-														<option value="<?= $v['id'] ?>"><?= date("d-m-Y",strtotime($v['date']))." | ". $v['quantity'] ." | ".$v['product_name']; ?></option>
-														<?php
-													}
-												} 
-												?>
-											</optgroup>
-												
-											</select> </label>
-									</section>
-
-									<section class="col col-6">
-										<label class="label"><strong>Producto por recibir</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
-											<input type="text" name="rest" placeholder="Producto por recibir"  required rest="true" readonly="" value="<?= $query_rest->result_array()[0]['rest'] ?>">
+										<label class="label"><strong>Precio Unitario</strong></label>
+										<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
+											<input type="text" name="unit_price" placeholder="Precio Unitario"  required readonly="" value="">
 										</label>
 										<div class="note">
-											Este campo es llenado autmáticamente y no puede ser menor a cero (0)
+											Este campo es llenado automáticamente con la información del proveedor
 										</div>
 									</section>
-									
-								</div>
 
-								<div class="row advance">
+									<section class="col col-6 advance" <?= $dnone_adv ?>>
+										<label class="label"><strong>Saldo proveedor</strong></label>
+										<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
+											<input type="text" name="adv_balance" placeholder="Saldo proveedor"  required rest="true" readonly="" <?= $disabled_adv ?>>
+										</label>
+										<div class="note">
+											Este campo es llenado automáticamente y no puede ser menor a cero (0)
+										</div>
+									</section>
+								</div>
+								
+								
+
+								<div class="row advance" <?= $dnone_adv ?>>
 									<section class="col col-6">
 										<label class="label"><strong>Cantidad</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-tasks"></i>
-											<input type="text" name="quantity" placeholder="Cantidad" required amounts="true" value="<?= $value['reception_quantity'] ?>">
+											<input type="text" name="quantity" placeholder="Cantidad" required amounts="true" <?= $disabled_adv ?> value="<?= latin_format_number($valor['reception_quantity']) ?>">
 										</label>
 									</section>
 									<section class="col col-6">
 										<label class="label"><strong>Fecha</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-calendar"></i>
-											<input type="text" name="date" id="date" placeholder="Fecha" required value="<?= date("Y-m-d",strtotime($value['reception_date'])) ?>">
+											<input type="text" name="date" id="date" placeholder="Fecha" required <?= $disabled_adv ?> value="<?= date('Y-m-d',strtotime($valor['reception_date'])) ?>">
 										</label>
 									</section>
 								</div>
 
-								<div class="row credit" style="display: none">
+								<div class="row advance" <?= $dnone_adv ?>>
 									<section class="col col-6">
 										<label class="label"><strong>Producto</strong></label>
 										<label class="input">
-											<select name="product" style="width: 100%" class="select2" required disabled="" data-placeholder="Seleccione un producto">
+											<select name="product_advance" style="width: 100%" class="select2" required <?= $disabled_adv ?> data-placeholder="Seleccione un producto">
 												<option></option>
 												
 												<?php 
 
 
-													foreach ($datos['products'] as $k => $v) {
-														?>
-															<option value="<?= $v['id']; ?>"><?= $v['name']; ?></option>
-														<?php
+													foreach ($datos['products'] as $key => $value) {
+														if($value['id'] == $valor['product_id']){
+															?>
+																<option value="<?= $value['id']; ?>" selected="selected"><?= $value['name']; ?></option>
+															<?php
+															} else {
+															?>
+																<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
+															<?php
+															}
+													}
+
+
+												 ?>
+											</select> </label>
+									</section>
+								</div>
+
+								<?php 
+								if($valor['method_id'] != 2 && $valor['method_id'] != 1) {
+									$dnone_credit = 'style="display:none"';
+									$disabled_credit = 'disabled="disabled"';
+								}  else {
+									$dnone_credit = '';
+									$disabled_credit = '';
+								}
+
+								 ?>
+								<input type="hidden" name="advance_supplier_id" value="<?= $valor['advance_supplier_id'] ?>">
+								<div class="row credit" <?= $dnone_credit ?>>
+									<section class="col col-6">
+										<label class="label"><strong>Producto</strong></label>
+										<label class="input">
+											<select name="product_credit" style="width: 100%" class="select2" required <?= $disabled_credit ?> data-placeholder="Seleccione un producto">
+												<option></option>
+												
+												<?php 
+
+
+													foreach ($datos['products'] as $key => $value) {
+														if($value['id'] == $valor['product_id']){
+															?>
+																<option value="<?= $value['id']; ?>" selected="selected"><?= $value['name']; ?></option>
+															<?php
+															} else {
+															?>
+																<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
+															<?php
+															}
 													}
 
 
@@ -220,134 +258,51 @@
 									<section class="col col-6">
 										<label class="label"><strong>Cantidad</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-tasks"></i>
-											<input type="text" name="quantity_credit" placeholder="Cantidad" required amounts="true" disabled="">
+											<input type="text" name="quantity_credit" placeholder="Cantidad" required amounts="true" <?= $disabled_credit ?> value="<?= latin_format_number($valor['reception_quantity']) ?>">
 										</label>
 									</section>
 								</div>
-								<div class="row credit" style="display: none">
+								<div class="row credit" <?= $dnone_credit ?>>
 									<section class="col col-6">
 										<label class="label"><strong>Valor (COP)</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-											<input type="text" name="amount_credit" placeholder="Valor (COP)" required amounts="true" disabled="">
+											<input type="text" name="amount_credit" placeholder="Valor (COP)" required amounts="true" <?= $disabled_credit ?> onkeyup="this.value = numberFront('amount_credit')" value="<?= latin_format_number($valor['reception_amount']) ?>">
 										</label>
 									</section>
 									<section class="col col-6">
 										<label class="label"><strong>Fecha</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-calendar"></i>
-											<input type="text" name="date_credit" id="date_credit" placeholder="Fecha" required disabled="">
+											<input type="text" name="date_credit" id="date_credit" placeholder="Fecha" required <?= $disabled_credit ?> value="<?= date('Y-m-d',strtotime($valor['reception_date'])) ?>">
 										</label>
 									</section>
 								</div>
-								<?php } ?>
-								<?php if($value['method_id'] == 1 || $value['method_id'] == 2) { ?>
-								<div class="row credit">
-									<section class="col col-6">
-										<label class="label"><strong>Producto</strong></label>
-										<label class="input">
-											<select name="product" style="width: 100%" class="select2" required data-placeholder="Seleccione un producto">
-												<option></option>
-												
-												<?php 
 
+								<?php 
+								
+								$ci->load->model("Proveedores_model","suppliers");
 
-													foreach ($datos['products'] as $k => $v) {
-														if($v['id'] == $value['product_id']){
-														?>
-															<option value="<?= $v['id']; ?>" selected="selected"><?= $v['name']; ?></option>
-														<?php
-														} else {
-														?>
-															<option value="<?= $v['id']; ?>"><?= $v['name']; ?></option>
-														<?php	
-														}
-													}
-
-
-												 ?>
-											</select> </label>
-									</section>
-									<section class="col col-6">
-										<label class="label"><strong>Cantidad</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-tasks"></i>
-											<input type="text" name="quantity_credit" placeholder="Cantidad" required amounts="true" value="<?= $value['reception_quantity'] ?>">
-										</label>
-									</section>
-								</div>
-								<div class="row credit">
-									<section class="col col-6">
-										<label class="label"><strong>Valor (COP)</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-											<input type="text" name="amount_credit" placeholder="Valor (COP)" required amounts="true" value="<?= $value['amount'] ?>">
-										</label>
-									</section>
-									<section class="col col-6">
-										<label class="label"><strong>Fecha</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-calendar"></i>
-											<input type="text" name="date_credit" id="date_credit" placeholder="Fecha" required value="<?= date("Y-m-d",strtotime($value['reception_date'])) ?>">
-										</label>
-									</section>
-								</div>
-								<div class="row advance" style="display: none">
-									<section class="col col-6">
-										<label class="label"><strong>Anticipo Correspondiente</strong></label>
-										<label class="input" disabled>
-											<select name="advance_supplier_id" style="width: 100%" class="select2" required disabled="" data-placeholder="Seleccione un anticipo">
-
-												
-											</select> </label>
-									</section>
-
-									<section class="col col-6">
-										<label class="label"><strong>Producto por recibir</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
-											<input type="text" name="rest" placeholder="Producto por recibir"  required rest="true" readonly="" disabled="">
-										</label>
-										<div class="note">
-											Este campo es llenado autmáticamente y no puede ser menor a cero (0)
-										</div>
-									</section>
-									
-								</div>
-
-								<div class="row advance" style="display: none">
-									<section class="col col-6">
-										<label class="label"><strong>Cantidad</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-tasks"></i>
-											<input type="text" name="quantity" placeholder="Cantidad" required amounts="true" disabled="">
-										</label>
-									</section>
-									<section class="col col-6">
-										<label class="label"><strong>Fecha</strong></label>
-										<label class="input"> <i class="icon-prepend fa fa-calendar"></i>
-											<input type="text" name="date" id="date" placeholder="Fecha" required disabled="">
-										</label>
-									</section>
-								</div>
-								<?php } ?>
+								$query_shambles = $ci->suppliers->get_supplier_shambles_by_regional($valor['supplier_id']);
+								 ?>
 								<div class="row shamble">
-									<?php 
-									$ci = &get_instance();
-									$ci->load->model('Proveedores_model','suppliers');
-									$query_shambles = $ci->suppliers->get_supplier_shambles_by_regional($value['supplier_id']);
-
-									 ?>
 									<section class="col col-6">
 										<label class="label"><strong>Frigorífico</strong></label>
 										<label class="select">
 											<select name="shamble" required>
 												<option value="" disabled="" selected="">Seleccione un frigorífico</option>
 												<?php 
-												foreach ($query_shambles->result_array() as $k => $v) {
-													if($v['id'] == $value['shamble_id']) {
-														?>
-														<option value="<?= $v['id'] ?>" selected="selected"><?= $v['tradename'] ?></option>			
-														<?php
-													} else {
-														?>
-														<option value="<?= $v['id'] ?>"><?= $v['tradename'] ?></option>			
-														<?php
+
+
+													foreach ($query_shambles->result_array() as $key => $value) {
+														if($value['id'] == $valor['shamble_id']){
+															?>
+																<option value="<?= $value['id']; ?>" selected="selected"><?= $value['tradename']; ?></option>
+															<?php
+															} else {
+															?>
+																<option value="<?= $value['id']; ?>"><?= $value['tradename']; ?></option>
+															<?php
+															}
 													}
-												}
 
 
 												 ?>
@@ -356,7 +311,7 @@
 									<section class="col col-6">
 										<label class="label"><strong>Gasto Frigorífico</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-dollar"></i>
-											<input type="text" name="shamble_amount" placeholder="Gasto Frigorífico"  amounts="true" value="<?= $value['shamble_amount'] ?>">
+											<input type="text" name="shamble_amount" placeholder="Gasto Frigorífico" onkeyup="this.value = numberFront('shamble_amount')" value="<?= latin_format_number($valor['shamble_amount']) ?>">
 										</label>
 									</section>
 								</div>
@@ -364,7 +319,7 @@
 								<section>
 									<label class="label"><strong>Marcas</strong></label>
 									<label class="textarea"> <i class="icon-prepend fa fa-comment"></i>						 
-										<textarea rows="5" name="brand" placeholder="Marcas"><?= $value['brand'] ?></textarea> 
+										<textarea rows="5" name="brand" placeholder="Marcas"><?= $valor['brand'] ?></textarea> 
 									</label>
 								<div class="note">
 									<strong>Formato:</strong> Cantidad + Espacio + Marca. <strong>Ej:</strong> 10 M5.<br> Para insertar varios registros, separelos con un salto de línea utilizando la tecla ENTER.
@@ -375,7 +330,7 @@
 								<section>
 									<label class="label"><strong>Nota</strong></label>
 									<label class="textarea"> <i class="icon-prepend fa fa-comment"></i>						 
-										<textarea rows="5" name="note" placeholder="Nota"><?= $value['note'] ?></textarea> 
+										<textarea rows="5" name="note" placeholder="Nota"><?= $valor['note'] ?></textarea> 
 									</label>																		
 								<div class="note">
 									El valor de <i>CANTIDAD</i> debe ser entero o decimal de dos (2) dígitos separados por un punto (.)
@@ -385,8 +340,8 @@
 							</fieldset>
 							
 							<footer>
-								<button type="submit" id="button" class="btn btn-primary">
-									Guardar Cambios
+								<button type="submit" id="buttonNewRec" class="btn btn-primary">
+									Registrar
 								</button>
 								<button type="button" class="btn btn-default" data-dismiss="modal">
 									Cancelar

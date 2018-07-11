@@ -124,6 +124,12 @@
 																		<i class="fa fa-file-photo-o fa-lg"></i>
 																	</a>
 																	&nbsp;
+																	<?php } else { ?>
+																	&nbsp;
+																	<a href="#add_img_modal" data-toggle="modal" title="Añadir imagen" onclick="set_add_img('<?= $value['id'] ?>')">
+																		<i class="fa fa-plus-circle fa-lg"></i>
+																	</a>
+																	&nbsp;
 																	<?php } ?>
 																</td>
 															</tr>
@@ -295,22 +301,72 @@
 		</div><!-- /.modal-deleted -->
 
 		<!-- Modal Img -->
-				<div class="modal fade" id="imgModal" tabindex="-1" role="dialog">
-					<div class="modal-dialog">
-						<div class="modal-content">
-							<div class="modal-body">
-								<button type="button" id="close" class="close" data-dismiss="modal" aria-hidden="true">
-									&times;
+		<div class="modal fade" id="imgModal" tabindex="-1" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<button type="button" id="close" class="close" data-dismiss="modal" aria-hidden="true">
+							&times;
+						</button>
+						<div id="fullimg" style="text-align: center;"></div>
+
+												
+								
+
+					</div>
+
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal Img -->
+
+		<!-- add Img -->
+		<div class="modal fade" id="add_img_modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<button type="button" id="close-add-img" class="close" data-dismiss="modal" aria-hidden="true">
+							&times;
+						</button>
+						<form id="add-img-form" class="smart-form" action="javascript:add_img()">
+							<input type="hidden" name="add_img_id" value="">
+							<fieldset>
+								<section>
+									<label class="label"><strong>Título de la Imagen</strong></label>
+									<label class="input"> <i class="icon-prepend fa fa-user"></i>
+										<input type="text" name="title_add_img" id="title_add_img" placeholder="Título de la Imagen">
+									</label>
+								</section>	
+								<section>									
+									<div class="input input-file">
+										<span class="button"><input id="file_add_img" name="file_add_img" onchange="this.parentNode.nextSibling.value = this.value" type="file"><i class="fa fa-camera"></i></span><input placeholder="Toma una foto o selecciona un archivo" id="photo_add_img" readonly="" type="text" capture img="true" required>
+									</div>
+									<div class="note">
+										El formato de la imagen debe ser jpg
+									</div>												
+								</section>
+
+								<section>
+									<img src="" id="imgSalida_add_img" style="max-width: 100%;height: auto; max-height: 300px; display: block; margin-left: auto; margin-right: auto;">
+								</section>
+								
+							</fieldset>
+							<footer>
+								<button type="submit" class="btn btn-primary">
+									Añadir
 								</button>
-								<div id="fullimg" style="text-align: center;"></div>
+								<button type="button" class="btn btn-default" data-dismiss="modal">
+									Cancelar
+								</button>
+							</footer>
+						</form>		
 
-														
-										
+												
+								
 
-							</div>
+					</div>
 
-						</div><!-- /.modal-content -->
-					</div><!-- /.modal-dialog -->
-				</div><!-- /.modal Img -->
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.add Img -->
 
 		
