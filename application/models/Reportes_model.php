@@ -36,7 +36,9 @@ class Reportes_model extends CI_Model {
 	public function get_unit_price_adv_supplier($advance_supplier_id)
 	{
 		$query = $this->db->query('SELECT unit_price FROM advance_supplier WHERE id = ?',array($advance_supplier_id));
-		return $query->result_array()[0]['unit_price'];
+		if(!empty($query->result_array())){
+			return $query->result_array()[0]['unit_price'];
+		}
 	}
 
 	public function get_client_report($client_id, $startdate, $finishdate)
@@ -100,7 +102,7 @@ class Reportes_model extends CI_Model {
 
 		$shambles = $this->db->query('SELECT shamble.id, shamble.tradename, rut, phone, email, address, zip, city.name AS city_name, department.name AS department_name, country.name AS country_name FROM shamble INNER JOIN supplier_has_shamble ON supplier_has_shamble.shamble_id = shamble.id INNER JOIN city ON city.id = shamble.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN country ON country.id = department.country_id WHERE supplier_id = ?',array($supplier_id));
 
-		$receptions = $this->db->query('SELECT reception.id, reception.date, reception.quantity, reception.note, regional.name AS regional_name, city.name AS city_name, department.name AS department_name, country.name AS country_name, method.name AS method_name, shamble.tradename AS shamble_name, shamble_amount, advance_supplier_id, brand, product.name AS product_name FROM reception INNER JOIN regional ON regional.id = reception.regional_id INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN country ON country.id = department.country_id INNER JOIN method ON method.id = reception.method_id INNER JOIN shamble ON shamble.id = reception.shamble_id LEFT JOIN product ON product.id = reception.product_id WHERE reception.deleted != 1 AND reception.supplier_id = ? AND reception.date >= ? AND reception.date <= ?',array($supplier_id,$startdate,$finishdate)); 
+		$receptions = $this->db->query('SELECT reception.id, reception.date, reception.quantity, reception.note, regional.name AS regional_name, reception.method_id, reception_amount, city.name AS city_name, department.name AS department_name, country.name AS country_name, method.name AS method_name, shamble.tradename AS shamble_name, shamble_amount, advance_supplier_id, brand, product.name AS product_name FROM reception INNER JOIN regional ON regional.id = reception.regional_id INNER JOIN city ON city.id = regional.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN country ON country.id = department.country_id INNER JOIN method ON method.id = reception.method_id INNER JOIN shamble ON shamble.id = reception.shamble_id LEFT JOIN product ON product.id = reception.product_id WHERE reception.deleted != 1 AND reception.supplier_id = ? AND reception.date >= ? AND reception.date <= ?',array($supplier_id,$startdate,$finishdate)); 
 
 
 		$total_brands = $this->db->query('SELECT brand_reception.brand, SUM(brand_reception.quantity) AS quantity FROM brand_reception INNER JOIN reception ON reception.id = brand_reception.reception_id WHERE reception.deleted != 1 AND reception.supplier_id = ? AND reception.date >= ? AND reception.date <= ? GROUP BY brand_reception.brand',array($supplier_id,$startdate,$finishdate));
@@ -125,6 +127,7 @@ class Reportes_model extends CI_Model {
 		$amount_receptions = $receptions_balance->result_array()[0]['total_amount'];
 
 		$balance = $saldo_inicial + $amount_advances - $amount_receptions;
+		
 		$balance = number_format($balance, 2, '.', '');
 
 		$array = array(
@@ -343,6 +346,18 @@ class Reportes_model extends CI_Model {
 		$balance = $amount_advances - $amount_pays;
 
 		return $balance;
+	}
+
+	public function get_receptions_for_fill()
+	{
+		$query = $this->db->query('SELECT id, advance_supplier_id, quantity FROM reception WHERE reception_amount IS NULL');
+		return $query;
+	}
+
+	public function set_reception_amount($reception_id,$array)
+	{
+		$this->db->where('id', $reception_id);
+		return $this->db->update('reception', $array);
 	}
 
 }

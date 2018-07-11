@@ -1422,23 +1422,29 @@ class Reportes extends CI_Controller {
 						$adv_rest = 0;
 						$adv_due = 0;
 
-						foreach ($query['transactions'] as $key => $value) {
+						foreach ($query['receptions'] as $key => $value) {
 							if($value['method_id'] == 1){
-								$cash_amount = $value['amount'] + $cash_amount;
+								$cash_amount = $value['reception_amount'] + $cash_amount;
 								$cash_quantity = $value['quantity'] + $cash_quantity;
 								$cash_count++;
 							}
 							if($value['method_id'] == 2){
-								$credit_amount = $value['amount'] + $credit_amount;
+								$credit_amount = $value['reception_amount'] + $credit_amount;
 								$credit_quantity = $value['quantity'] + $credit_quantity;
 								$credit_count++;
 							}
 							if($value['method_id'] == 3){
-								$adv_amount = $value['amount'] + $adv_amount;
+
+								if($value['reception_amount'] == "" || $value['reception_amount'] == NULL) {
+									$unit_price_reception = $this->reports->get_unit_price_adv_supplier($value['advance_supplier_id']);
+									$value['reception_amount'] = $unit_price_reception * $value['quantity'];
+
+								}
+								$adv_amount = $value['reception_amount'] + $adv_amount;
 								$adv_quantity = $value['quantity'] + $adv_quantity;
 								$adv_count++;
 
-								if($value['payed'] == 0) {
+								/*if($value['payed'] == 0) {
 									if($value['payed'] == 0) {
 										$rest_query = $this->finances->get_rest_advance($value['id']);
 										$rest = $rest_query->result_array()[0]['rest'];
@@ -1447,7 +1453,7 @@ class Reportes extends CI_Controller {
 									}
 									$adv_due = ($rest*$value['unit_price']) + $adv_due;
 									$adv_rest = $adv_rest + $rest;
-								}
+								}*/
 							}
 
 						}
@@ -1457,20 +1463,20 @@ class Reportes extends CI_Controller {
 						}
 
 						 ?>
-						<strong>Producto Recibido de Contado (<?= $cash_count ?>):</strong> 
+						<strong>Recepciones de Contado (<?= $cash_count ?>):</strong> 
 						<hr>
 						<div style="font-size: 16px"><strong>Cantidad Producto:</strong> <?= $cash_quantity ?></div>
 						<div>Valor: <?= latin_format_number($cash_amount) ?> COP</div>
 					</div>
 					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
-						<strong>Producto Recibido a Crédito (<?= $credit_count ?>):</strong> 
+						<strong>Recepciones a Crédito (<?= $credit_count ?>):</strong> 
 						<hr>
 						<div style="font-size: 16px"><strong>Cantidad Producto:</strong> <?= $credit_quantity ?></div>
 						<div>Valor: <?= latin_format_number($credit_amount) ?> COP</div>
 						
 					</div>
 					<div class="col-lg-4 text-center" style="padding: 10px 5px 10px 5px;">
-						<strong>Producto Recibido en Anticipo (<?= $adv_count ?>):</strong> 
+						<strong>Recepciones en Anticipo (<?= $adv_count ?>):</strong> 
 						<hr>
 						<div style="font-size: 16px"><strong>Cantidad Producto:</strong> <?= $adv_quantity ?></div>
 						<div>Valor: <?= latin_format_number($adv_amount) ?> COP</div>
@@ -1519,6 +1525,7 @@ class Reportes extends CI_Controller {
 									<th data-hide="phone,tablet">Producto</th>
 									<th data-hide="phone,tablet">Cantidad</th>
 									<th data-hide="phone,tablet">Marcas</th>
+									<th data-hide="phone,tablet">Valor (COP)</th>
 									<th data-hide="phone,tablet">Trans. N°</th>
 									<th data-hide="phone,tablet">Método de Pago</th>
 									<th data-hide="phone,tablet">Frigorífico</th>
@@ -1551,6 +1558,7 @@ class Reportes extends CI_Controller {
 											<td><?= $value['product_name']?></td>
 											<td><?= $value['quantity']; ?></td>
 											<td><?= $receptions_brands; ?></td>
+											<td><?= $value['reception_amount']; ?></td>
 											<td><?= $value['advance_supplier_id']; ?></td>
 											<td><?= $value['method_name']; ?></td>
 											<td><?= $value['shamble_name']; ?></td>
@@ -1632,10 +1640,10 @@ class Reportes extends CI_Controller {
 									<th data-class="expand">Fecha</th>
 									<th data-hide="phone,tablet">Monto (COP)</th>
 									<th data-hide="phone,tablet">Producto</th>
-									<th data-hide="phone,tablet">Cantidad</th>
+									<!-- <th data-hide="phone,tablet">Cantidad</th>
 									<th data-hide="phone,tablet">Recibido</th>
 									<th data-hide="phone,tablet">Falta</th>
-									<th data-hide="phone,tablet">Deuda (COP)</th>
+									<th data-hide="phone,tablet">Deuda (COP)</th> -->
 									<th data-hide="phone,tablet">Regional</th>
 									<th data-hide="phone,tablet">Método de Pago</th>
 								</tr>
@@ -1659,12 +1667,12 @@ class Reportes extends CI_Controller {
 											<td><?= $value['id']; ?></td>
 											<td><?= $value['supplier_name']?></td>
 											<td><?= strftime("%A %d-%m-%Y", strtotime($value['date']))?></td>
-											<td><?= $value['amount']?></td>
+											<td><?= latin_format_number($value['amount'])?></td>
 											<td><?= $value['product_name']; ?></td>
-											<td><?= $value['quantity']; ?></td>
+											<!-- <td><?= $value['quantity']; ?></td>
 											<td><?= $total_recivied ?></td>
 											<td><?= $rest ?></td>
-											<td><?= $rest*$value['unit_price'] ?></td>
+											<td><?= $rest*$value['unit_price'] ?></td> -->
 											<td><?= $value['regional_name']; ?></td>
 											<td><?= $value['method_name']; ?></td>
 										</tr>
@@ -2720,7 +2728,51 @@ class Reportes extends CI_Controller {
 		$this->output->enable_profiler(TRUE);
 	}
 
+	public function fill_unit_price()
+	{
+		$query = $this->reports->get_receptions_for_fill();
+		$receptions = 0;
+		$receptions_update = 0;
+		$html = "";
+		foreach ($query->result_array() as $key => $value) {
+
+			if($value['advance_supplier_id'] != "" && $value['advance_supplier_id'] != NULL){
+				$receptions++;
+				$unit_price = $this->reports->get_unit_price_adv_supplier($value['advance_supplier_id']);
+
+
+				$reception_amount = $unit_price*$value['quantity'];
+				$reception_amount = number_format($reception_amount,2,".","");
+				$array = array(
+					"reception_amount" => $reception_amount,
+					"unit_price" => $unit_price
+				);
+				$update = $this->reports->set_reception_amount($value['id'],$array);
+				if($update) {
+					$receptions_update++;
+					$html .= $value['id'];
+				}
+				$html .= $value['id']."<br>";
+				// $html .= $unit_price."x".$value['quantity']."=".$reception_amount."<br>";
+				// echo $value['id']." Anticipo: ".$value['advance_supplier_id']." Unit_price: ".$unit_price." quantity: ".$value['quantity']." Reception_amount: ".$reception_amount."<br>";
+				
+
+			}
+			unset($unit_price);
+			unset($reception_amount);
+			unset($array);
+			$value['advance_supplier_id'] = "";
+		}
+
+		echo "Recepciones encontradas: ".$receptions."<br>";
+		echo "Recepciones editadas: ".$receptions_update."<br>";
+		echo $html;
+
+		$this->output->enable_profiler(TRUE);
+	}
+
 }
+
 
 /* End of file Reportes.php */
 /* Location: ./application/controllers/Reportes.php */
