@@ -217,7 +217,7 @@ class Bodega extends CI_Controller {
 			$this->load->model('Usuarios_model', 'users');
 			$array = array(
 				"date" => date("Y-m-d H:i:s"),
-				"record_id" => $_SESSION['regional'],
+				"record_id" => $reception_id,
 				"user_id" => $_SESSION['id'],
 				"operation_id" => 1,
 				"table" => "Recepción Regional"
