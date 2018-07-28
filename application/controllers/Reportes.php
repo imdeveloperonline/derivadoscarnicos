@@ -2771,6 +2771,54 @@ class Reportes extends CI_Controller {
 		$this->output->enable_profiler(TRUE);
 	}
 
+	public function ajustar_marcas()
+	{
+		$this->load->model("Bodega_model","storage");
+
+		
+		$get_brands_in_receptions = $this->reports->get_brands_in_receptions();
+		$n = 0;
+		
+		foreach ($get_brands_in_receptions->result_array() as $key => $value) {
+			
+			// $brands = str_replace("\n","|",$value['brand']);
+			$reception_id = $value['id'];
+			$rows = explode("\n",$value['brand']);
+			$count = count($rows);
+
+			/*echo "Id: ".$value['id']."Marcas: ".$value['brand']."<br>";
+			var_dump($rows);
+			echo "<br>".$count."<br>";*/
+
+
+			/*$check = $this->reports->check_if_have_brands($value['id']);
+			if(!empty($check)){*/
+				$this->storage->remove_brands($reception_id);
+			
+				for ($i=0; $i < $count ; $i++) { 				
+					if($rows[$i] != ""){
+						$row = explode(" ", $rows[$i]);
+						$row = array_map('trim',$row);
+						$array = array("reception_id" => $reception_id, "quantity" => $row[0], "brand" => $row[1]);
+						$this->storage->set_brands_reception($array);
+						
+					}										
+				}				
+				$n++;
+			// }
+
+			
+				
+			
+		}
+		echo $n;
+		// echo count($get_brands_in_receptions->result_array());
+		$this->output->enable_profiler(TRUE);
+
+		
+
+	}
+
 }
 
 

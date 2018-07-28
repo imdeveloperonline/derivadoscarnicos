@@ -66,7 +66,7 @@ class Bodega_model extends CI_Model {
 
 	public function get_last_reception()
 	{
-		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, reception.brand, advance_supplier_id, reception.product_id, note, product.name AS product_name, supplier.tradename AS supplier_name, department.name AS department_name, city.name AS city_name, reception.method_id, method.name AS method_name, reception_amount FROM reception LEFT JOIN advance_supplier ON advance_supplier.id = reception.advance_supplier_id INNER JOIN product ON reception.product_id = product.id INNER JOIN supplier ON supplier.id = advance_supplier.supplier_id INNER JOIN city ON city.id = supplier.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN method ON method.id = reception.method_id ORDER BY reception.id DESC LIMIT 1');
+		$query = $this->db->query('SELECT reception.id, reception.date AS reception_date, reception.quantity AS reception_quantity, reception.brand, advance_supplier_id, reception.product_id, note, product.name AS product_name, supplier.tradename AS supplier_name, department.name AS department_name, city.name AS city_name, reception.method_id, method.name AS method_name, reception_amount FROM reception INNER JOIN product ON reception.product_id = product.id INNER JOIN supplier ON supplier.id = reception.supplier_id INNER JOIN city ON city.id = supplier.city_id INNER JOIN department ON department.id = city.department_id INNER JOIN method ON method.id = reception.method_id ORDER BY reception.id DESC LIMIT 1');
 		return $query;
 	}
 
@@ -152,7 +152,7 @@ class Bodega_model extends CI_Model {
 
 	public function set_brands_reception($array)
 	{
-		$this->db->insert('brand_reception', $array);
+		return $this->db->insert('brand_reception', $array);
 	}
 
 	public function get_brands_reception($id)
@@ -316,7 +316,7 @@ class Bodega_model extends CI_Model {
 
 	public function remove_brands($reception_id)
 	{
-		$this->db->delete('brand_reception', array("reception_id" => $reception_id));
+		return $this->db->delete('brand_reception', array("reception_id" => $reception_id));
 	}
 
 }
