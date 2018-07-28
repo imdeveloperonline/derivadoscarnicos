@@ -492,7 +492,7 @@ class Bodega extends CI_Controller {
 				// Rest verify
 
 				$new_balance = $adv_balance_ini - ($params['quantity']*$params['unit_price']);
-				if ($new_balance < 0) {
+				/*if ($new_balance < 0) {
 					?>
 					<div id="message" class="alert alert-block alert-danger">
 						<a class="close" data-dismiss="alert" href="#">×</a>
@@ -504,7 +504,7 @@ class Bodega extends CI_Controller {
 
 					<?php
 					exit();
-				}
+				}*/
 			} 
 			
 			$query = $this->storage->update_reception($reception_id,$params);

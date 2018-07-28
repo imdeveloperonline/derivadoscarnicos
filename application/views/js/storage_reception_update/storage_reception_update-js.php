@@ -415,6 +415,9 @@
                   if(method_id == 3){
                     quantity_ini = stringToNumber($('input[name="quantity"]').val());
                     adv_balance_ini = parseFloat(response) + parseFloat((unit_price*quantity_ini));
+                    if(adv_balance_ini < 0) {
+                      $("input[name='adv_balance']").css("color","red");
+                    }
                   } else {
                     quantity_ini = stringToNumber($('input[name="quantity_credit"]').val());
                     adv_balance_ini = parseFloat(response);
@@ -459,6 +462,9 @@
               success : function(response) {
                 adv_balance = response;
                 $("input[name='adv_balance']").val(numberToString(response));
+                if(adv_balance < 0) {
+                   $("input[name='adv_balance']").css("color","red");
+                }
               },
               error : function (error) {
                 alert(JSON.stringify(error));
@@ -594,6 +600,9 @@
             success : function(response) {
               adv_balance = response;
               $("input[name='adv_balance']").val(numberToString(response));
+              if(adv_balance < 0) {
+                 $("input[name='adv_balance']").css("color","red");
+              }
             },
             error : function (error) {
               alert(JSON.stringify(error));
@@ -712,7 +721,7 @@
               url: '<?= base_url() ?>finanzas/get_precio_unitario_supplier',
               type: 'post',
               data: {supplier_id: supplier_id},
-              success : function(response) {
+              success : function(response) {                
                 $('input[name="unit_price"]').val(numberToString(response));
                 $("select[name='product']").select2();
                 $("select[name='product']").val(1);
@@ -774,7 +783,7 @@
             }
 
             if(new_balance == 100000 || new_balance < 100000) {
-              $('<div id="message-form" class="alert alert-block alert-info"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>El saldo del proveedor es igual o menos a 100.000 COP. Debe ser informado al administrador.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
+              $("#form-alert").html('<div id="message-form" class="alert alert-block alert-info"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>El saldo del proveedor es igual o menos a 100.000 COP. Debe ser informado al administrador.</p></div>').hide().fadeIn('slow');
             } else {
               $("#message-form").fadeOut(250).remove();
             }

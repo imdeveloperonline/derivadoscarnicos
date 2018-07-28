@@ -124,13 +124,16 @@
 
 													foreach ($datos['methods'] as $key => $value) {
 														if($value['id'] == $valor['method_id']){
-															?>
-																<option value="<?= $value['id']; ?>" selected="selected"><?= $value['name']; ?></option>
-															<?php
-															} else {
-															?>
-																<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
-															<?php
+
+															if($value['id'] != 2){
+																?>
+																	<option value="<?= $value['id']; ?>" selected="selected"><?= $value['name']; ?></option>
+																<?php
+																} else {
+																?>
+																	<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
+																<?php
+																}
 															}
 													}
 
@@ -165,7 +168,7 @@
 									<section class="col col-6 advance" <?= $dnone_adv ?>>
 										<label class="label"><strong>Saldo proveedor</strong></label>
 										<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
-											<input type="text" name="adv_balance" placeholder="Saldo proveedor"  required rest="true" readonly="" <?= $disabled_adv ?>>
+											<input type="text" name="adv_balance" placeholder="Saldo proveedor" required  readonly="" <?= $disabled_adv ?>>
 										</label>
 										<div class="note">
 											Este campo es llenado automáticamente y no puede ser menor a cero (0)
@@ -340,8 +343,8 @@
 							</fieldset>
 							
 							<footer>
-								<button type="submit" id="buttonNewRec" class="btn btn-primary">
-									Registrar
+								<button type="submit" id="button" class="btn btn-primary">
+									Guardar Cambios
 								</button>
 								<button type="button" class="btn btn-default" data-dismiss="modal">
 									Cancelar
