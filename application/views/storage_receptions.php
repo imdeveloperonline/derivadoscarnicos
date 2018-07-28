@@ -232,9 +232,12 @@
 
 
 															foreach ($datos['methods'] as $key => $value) {
+
+																if($value['id'] != 2) {
 																?>
 																	<option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
 																<?php
+																}	
 															}
 
 
@@ -257,7 +260,7 @@
 											<section class="col col-6 advance" style="display: none">
 												<label class="label"><strong>Saldo proveedor</strong></label>
 												<label class="input"> <i class="icon-prepend fa fa-window-minimize"></i>
-													<input type="text" name="adv_balance" placeholder="Saldo proveedor"  required rest="true" readonly="" disabled="">
+													<input type="text" name="adv_balance" placeholder="Saldo proveedor"  required readonly="" disabled="">
 												</label>
 												<div class="note">
 													Este campo es llenado automáticamente y no puede ser menor a cero (0)

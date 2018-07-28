@@ -164,7 +164,7 @@ class Bodega extends CI_Controller {
 			$new_balance = $balance - ($params['quantity']*$params['unit_price']);
 			
 
-			if ($new_balance < 0) {
+			/*if ($new_balance < 0) {
 				?>
 				<div id="message" class="alert alert-block alert-danger">
 					<a class="close" data-dismiss="alert" href="#">×</a>
@@ -176,7 +176,7 @@ class Bodega extends CI_Controller {
 
 				<?php
 				exit();
-			}
+			}*/
 
 		} else {
 				$this->load->model('Finanzas_model', 'finances');
@@ -235,7 +235,7 @@ class Bodega extends CI_Controller {
 
 			/******* Si el proveedor tiene 100.000 pesos o menos de saldo se envía alerta al correo *******/
 			if($new_balance <= 100000 && $params['method_id'] == 3 && base_url() != "http//localhost/codeigniter/" ) {
-				$reception_query = $this->storage->get_last_reception();
+				$reception_query = $this->storage->get_reception($reception_id);
 				$this->storage->send_low_rest_alert($reception_query->result_array(), $new_balance);
 			}
 
@@ -547,7 +547,7 @@ class Bodega extends CI_Controller {
 */					
 					/******* Si el proveedor tiene 100.000 pesos o menos de saldo se envía alerta al correo *******/
 					if($new_balance <= 100000 && $params['method_id'] == 3 && base_url() != "http//localhost/codeigniter/" ) {
-						$reception_query = $this->storage->get_last_reception();
+						$reception_query = $this->storage->get_reception($reception_id);
 						$this->storage->send_low_rest_alert($reception_query->result_array(), $new_balance);
 					}
 				}

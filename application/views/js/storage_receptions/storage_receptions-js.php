@@ -105,7 +105,7 @@
 						}
 
 						if(reception_rest == 100000 || reception_rest < 100000) {
-							$('<div id="message-form" class="alert alert-block alert-info"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>El saldo del proveedor es igual o menos a 100.000 COP. Debe ser informado al administrador.</p></div>').appendTo('#form-alert').hide().fadeIn('slow');
+							$("#form-alert").html('<div id="message-form" class="alert alert-block alert-info"><a class="close" data-dismiss="alert" href="#">×</a><h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> Alerta</h4><p>El saldo del proveedor es igual o menos a 100.000 COP. Debe ser informado al administrador.</p></div>').hide().fadeIn('slow');
 						} else {
 							$("#message-form").fadeOut(250).remove();
 						}
@@ -126,6 +126,9 @@
 								success : function(response) {
 									adv_balance = response;
 									$("input[name='adv_balance']").val(numberToString(response));
+									if(adv_balance < 0) {
+										$("input[name='adv_balance']").css("color","red");
+									}
 								},
 								error : function (error) {
 									alert(JSON.stringify(error));
@@ -292,6 +295,9 @@
 							success : function(response) {
 								adv_balance = response;
 								$("input[name='adv_balance']").val(numberToString(response));
+								if(adv_balance < 0) {
+									$("input[name='adv_balance']").css("color","red");
+								}
 							},
 							error : function (error) {
 								alert(JSON.stringify(error));
@@ -422,6 +428,9 @@
 						success : function(response) {
 							adv_balance = response;
 							$("input[name='adv_balance']").val(numberToString(response));
+							if(adv_balance < 0) {
+								$("input[name='adv_balance']").css("color","red");
+							}
 						},
 						error : function (error) {
 							alert(JSON.stringify(error));
@@ -601,6 +610,8 @@
       		
 	      function new_reception() { 
 
+	      	$("#buttonNewRec").prop("disabled",true);
+
 	      	var method = $('select[name="method"]').val();
 
 	      	var shamble_amount = stringToNumber($('input[name="shamble_amount"]').val());
@@ -658,6 +669,7 @@
 	                        $("#message").hide().fadeIn('slow');
 	                        $("#buttonNewRec").html("Registrar");
 	                        $("#close").click();
+	                        $("#buttonNewRec").prop("disabled",false);
 
 	                },
 	                error:function(error){
@@ -667,6 +679,7 @@
 
 	                  $("#buttonNewRec").html("Registrar");
 	                  $("#close").click();
+	                  $("#buttonNewRec").prop("disabled",false);
 	                }
 	        });
 
